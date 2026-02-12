@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boots On The Ground AI — Playbook Hub</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #243558;
+    --blue: #2E86AB;
+    --gold: #D4A843;
+    --gold-hover: #E0B854;
+    --light-bg: #F4F7FA;
+    --white: #FFFFFF;
+    --gray: #6C757D;
+    --dark-text: #1a1a2e;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    min-height: 100vh;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--gold) 60%, var(--blue) 100%);
+  }
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .header-mascot {
+    width: 90px;
+    height: 90px;
+    border-radius: 16px;
+    border: 3px solid var(--gold);
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+
+  .header-text h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .header-text h1 span {
+    color: var(--gold);
+  }
+
+  .header-text p {
+    color: var(--blue);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-top: 0.25rem;
+  }
+
+  /* ===== PAWS DECORATIVE ===== */
+  .paw-accent {
+    display: inline-block;
+    margin-left: 0.5rem;
+    font-size: 1.1rem;
+  }
+
+  /* ===== NAV BAR ===== */
+  .nav-bar {
+    background: var(--navy);
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .nav-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-stats {
+    display: flex;
+    gap: 2rem;
+  }
+
+  .nav-stat {
+    text-align: center;
+  }
+
+  .nav-stat-num {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .nav-stat-label {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 0.15rem;
+  }
+
+  .nav-search {
+    position: relative;
+  }
+
+  .nav-search input {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 0.5rem 1rem 0.5rem 2.2rem;
+    color: var(--white);
+    font-size: 0.85rem;
+    width: 220px;
+    outline: none;
+    transition: all 0.2s;
+  }
+
+  .nav-search input:focus {
+    background: rgba(255,255,255,0.12);
+    border-color: var(--blue);
+    width: 280px;
+  }
+
+  .nav-search input::placeholder { color: rgba(255,255,255,0.35); }
+
+  .nav-search-icon {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.35);
+    font-size: 0.85rem;
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  .main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+  }
+
+  /* ===== PLAYBOOK GRID ===== */
+  .playbook-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+  }
+
+  .playbook-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+  }
+
+  .playbook-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(27, 42, 74, 0.15);
+  }
+
+  .playbook-card:hover .card-cover-overlay {
+    opacity: 1;
+  }
+
+  .card-cover {
+    position: relative;
+    height: 220px;
+    overflow: hidden;
+  }
+
+  .card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  .card-cover-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(27, 42, 74, 0.85) 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 1.25rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card-cover-overlay span {
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    z-index: 2;
+  }
+
+  .card-body {
+    padding: 1.25rem;
+  }
+
+  .card-icon-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--gray);
+    line-height: 1.5;
+    margin-top: 0.5rem;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .card-meta-item {
+    font-size: 0.75rem;
+    color: var(--gray);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .card-meta-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+
+  /* ===== COMING SOON CARD ===== */
+  .playbook-card.coming-soon {
+    border: 2px dashed #d0d5dd;
+    background: transparent;
+    box-shadow: none;
+    cursor: default;
+  }
+
+  .playbook-card.coming-soon:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .coming-soon-inner {
+    height: 100%;
+    min-height: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .coming-soon-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  .coming-soon-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    opacity: 0.5;
+  }
+
+  .coming-soon-desc {
+    font-size: 0.8rem;
+    color: var(--gray);
+    margin-top: 0.35rem;
+    opacity: 0.6;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--navy);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+
+  .footer p {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.8rem;
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; text-align: center; }
+    .header-text h1 { font-size: 1.4rem; }
+    .nav-inner { flex-direction: column; gap: 0.75rem; }
+    .playbook-grid { grid-template-columns: 1fr; }
+    .nav-search input { width: 100%; }
+    .nav-search input:focus { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-inner">
+      <img
+        src="https://gqqzaphchpedaczatonq.supabase.co/storage/v1/object/public/Images/appbuilder.jpg"
+        alt="Boots Mascot"
+        class="header-mascot"
+      />
+      <div class="header-text">
+        <h1>BOOTS ON THE GROUND <span>AI</span></h1>
+        <p>Playbook Command Center</p>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAV BAR -->
+  <div class="nav-bar">
+    <div class="nav-inner">
+      <div class="nav-stats">
+        <div class="nav-stat">
+          <div class="nav-stat-num" id="playbook-count">2</div>
+          <div class="nav-stat-label">Playbooks</div>
+        </div>
+        <div class="nav-stat">
+          <div class="nav-stat-num">41</div>
+          <div class="nav-stat-label">Total Pages</div>
+        </div>
+        <div class="nav-stat">
+          <div class="nav-stat-num">20</div>
+          <div class="nav-stat-label">Golden Rules</div>
+        </div>
+      </div>
+      <div class="nav-search">
+        <span class="nav-search-icon">&#128269;</span>
+        <input type="text" placeholder="Search playbooks..." id="search-input" />
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <div class="section-label">Your Playbooks</div>
+
+    <div class="playbook-grid" id="playbook-grid">
+
+      <!-- DOCKER PLAYBOOK -->
+      <a href="BOTG_Docker_Playbook.pdf" class="playbook-card" data-title="docker playbook containerization">
+        <div class="card-cover" style="background: linear-gradient(135deg, #1B2A4A 0%, #0db7ed 100%);">
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;">
+            <div style="font-size:3.5rem;">&#128051;</div>
+            <div style="color:white;font-size:1.8rem;font-weight:800;letter-spacing:0.02em;">DOCKER</div>
+            <div style="color:#D4A843;font-size:0.85rem;font-weight:600;">PLAYBOOK</div>
+          </div>
+          <div class="card-cover-overlay">
+            <span>&#9654; Open Playbook</span>
+          </div>
+        </div>
+        <div class="card-badge">BOOTS APPROVED</div>
+        <div class="card-body">
+          <div class="card-icon-row">
+            <div class="card-icon" style="background:linear-gradient(135deg,#0db7ed,#066da5);">&#128051;</div>
+            <div class="card-title">Docker Playbook</div>
+          </div>
+          <div class="card-desc">
+            Containerize every Next.js & React app. Multi-stage builds, Docker Compose, environment management, and production deployment checklists.
+          </div>
+          <div class="card-meta">
+            <div class="card-meta-item"><div class="card-meta-dot"></div> 23 pages</div>
+            <div class="card-meta-item"><div class="card-meta-dot"></div> 10 Golden Rules</div>
+            <div class="card-meta-item"><div class="card-meta-dot"></div> Feb 2026</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- GITHUB PLAYBOOK -->
+      <a href="BOTG_GitHub_Playbook.pdf" class="playbook-card" data-title="github playbook version control">
+        <div class="card-cover" style="background: linear-gradient(135deg, #1B2A4A 0%, #24292E 100%);">
+          <div style="display:flex;align-items:center;justify-content:center;height:100%;flex-direction:column;gap:0.5rem;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            <div style="color:white;font-size:1.8rem;font-weight:800;letter-spacing:0.02em;">GITHUB</div>
+            <div style="color:#D4A843;font-size:0.85rem;font-weight:600;">PLAYBOOK</div>
+          </div>
+          <div class="card-cover-overlay">
+            <span>&#9654; Open Playbook</span>
+          </div>
+        </div>
+        <div class="card-badge">BOOTS APPROVED</div>
+        <div class="card-body">
+          <div class="card-icon-row">
+            <div class="card-icon" style="background:linear-gradient(135deg,#24292E,#444D56);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            </div>
+            <div class="card-title">GitHub Playbook</div>
+          </div>
+          <div class="card-desc">
+            Version control done right. Branching strategy, GitHub Actions CI/CD, .gitignore templates, daily workflow, and command quick reference.
+          </div>
+          <div class="card-meta">
+            <div class="card-meta-item"><div class="card-meta-dot"></div> 18 pages</div>
+            <div class="card-meta-item"><div class="card-meta-dot"></div> 10 Golden Rules</div>
+            <div class="card-meta-item"><div class="card-meta-dot"></div> Feb 2026</div>
+          </div>
+        </div>
+      </a>
+
+      <!-- COMING SOON PLACEHOLDER -->
+      <div class="playbook-card coming-soon">
+        <div class="coming-soon-inner">
+          <div class="coming-soon-icon">&#128218;</div>
+          <div class="coming-soon-title">Next Playbook</div>
+          <div class="coming-soon-desc">CI/CD? Databases? APIs? You decide.</div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <p>&copy; 2026 <a href="https://bootsagentai.com">Boots On The Ground AI</a> &mdash; AI Solutions for Small Business Owners</p>
+  </footer>
+
+  <script>
+    // Simple search filter
+    const searchInput = document.getElementById('search-input');
+    const grid = document.getElementById('playbook-grid');
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const cards = grid.querySelectorAll('.playbook-card');
+      cards.forEach(card => {
+        const title = (card.dataset.title || '').toLowerCase();
+        const desc = (card.textContent || '').toLowerCase();
+        if (!query || title.includes(query) || desc.includes(query)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>
