@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Mastery Playbook — Boots On The Ground AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #243558;
+    --blue: #2E86AB;
+    --gold: #D4A843;
+    --gold-hover: #E0B854;
+    --claude-orange: #E07C3E;
+    --claude-dark: #C4612A;
+    --light-bg: #F4F7FA;
+    --white: #FFFFFF;
+    --gray: #6C757D;
+    --dark-text: #1a1a2e;
+    --green: #10B981;
+    --red: #EF4444;
+    --purple: #8B5CF6;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #2D1810 50%, var(--claude-orange) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--claude-orange) 50%, var(--gold) 100%);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .header-icon { font-size: 4rem; margin-bottom: 1rem; }
+
+  .header-inner h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-inner h1 span { color: var(--gold); }
+
+  .header-sub {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    font-weight: 500;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .header-meta-item {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* ===== REUSABLE ===== */
+  .back-link { max-width: 900px; margin: 0 auto; padding: 1.25rem 2rem 0; }
+  .back-link a { color: var(--blue); text-decoration: none; font-size: 0.85rem; font-weight: 600; display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+  .back-link a:hover { color: var(--gold); }
+
+  .toc { max-width: 900px; margin: 1.5rem auto; padding: 0 2rem; }
+  .toc-box { background: var(--white); border-radius: 16px; padding: 1.75rem 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid var(--claude-orange); }
+  .toc-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray); margin-bottom: 1rem; }
+  .toc-list { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+  .toc-list a { color: var(--navy); text-decoration: none; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0; transition: color 0.2s; }
+  .toc-list a:hover { color: var(--claude-orange); }
+  .toc-num { background: var(--navy); color: var(--gold); width: 24px; height: 24px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 800; flex-shrink: 0; }
+
+  .content { max-width: 900px; margin: 0 auto; padding: 1rem 2rem 3rem; }
+  .section { background: var(--white); border-radius: 16px; padding: 2rem 2.25rem; margin-bottom: 1.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .section-num { display: inline-flex; align-items: center; justify-content: center; background: var(--navy); color: var(--gold); width: 32px; height: 32px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; margin-bottom: 0.75rem; }
+  .section h2 { font-size: 1.4rem; font-weight: 800; color: var(--navy); margin-bottom: 1rem; line-height: 1.3; }
+  .section h3 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin: 1.5rem 0 0.75rem; }
+  .section h4 { font-size: 0.95rem; font-weight: 700; color: var(--claude-orange); margin: 1.25rem 0 0.5rem; }
+  .section p { margin-bottom: 1rem; color: #374151; font-size: 0.95rem; }
+  .section ul, .section ol { margin-bottom: 1rem; padding-left: 1.5rem; }
+  .section li { margin-bottom: 0.5rem; font-size: 0.95rem; color: #374151; }
+
+  .callout { border-radius: 12px; padding: 1.25rem 1.5rem; margin: 1.25rem 0; font-size: 0.9rem; }
+  .callout-title { font-weight: 700; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
+  .callout-warn { background: #FEF3C7; border-left: 4px solid #F59E0B; }
+  .callout-warn .callout-title { color: #D97706; }
+  .callout-danger { background: #FEE2E2; border-left: 4px solid var(--red); }
+  .callout-danger .callout-title { color: var(--red); }
+  .callout-tip { background: #ECFDF5; border-left: 4px solid var(--green); }
+  .callout-tip .callout-title { color: #059669; }
+  .callout-info { background: #EFF6FF; border-left: 4px solid var(--blue); }
+  .callout-info .callout-title { color: var(--blue); }
+  .callout-claude { background: #FFF5EE; border-left: 4px solid var(--claude-orange); }
+  .callout-claude .callout-title { color: var(--claude-orange); }
+
+  .compare-table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.85rem; border-radius: 12px; overflow: hidden; }
+  .compare-table th { background: var(--navy); color: var(--gold); font-weight: 700; text-align: left; padding: 0.75rem 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+  .compare-table td { padding: 0.65rem 1rem; border-bottom: 1px solid #f0f0f0; color: #374151; }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:nth-child(even) td { background: #FAFBFC; }
+  .highlight-row td { background: #FFF5EE !important; font-weight: 600; }
+
+  .code-block { background: #1E293B; border-radius: 10px; padding: 1.25rem 1.5rem; margin: 1rem 0; overflow-x: auto; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; color: #E2E8F0; line-height: 1.7; white-space: pre; }
+  .code-block .comment { color: #64748B; }
+  .code-block .cmd { color: #4ADE80; }
+  .code-block .flag { color: #38BDF8; }
+  .code-block .highlight { color: var(--gold); font-weight: 600; }
+  .code-block .orange { color: #FB923C; }
+
+  .diagram { background: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 12px; padding: 1.5rem; margin: 1.25rem 0; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.82rem; line-height: 1.8; color: var(--navy); overflow-x: auto; white-space: pre; }
+
+  /* ===== SKILL GRADING ===== */
+  .grade-card { display: flex; align-items: center; gap: 1rem; background: #F8FAFC; border-radius: 10px; padding: 1rem 1.25rem; margin: 0.5rem 0; border-left: 4px solid #E2E8F0; }
+  .grade-card.beginner { border-left-color: var(--blue); }
+  .grade-card.intermediate { border-left-color: #F59E0B; }
+  .grade-card.advanced { border-left-color: var(--claude-orange); }
+  .grade-card.expert { border-left-color: var(--purple); }
+  .grade-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.5rem; border-radius: 4px; color: white; flex-shrink: 0; }
+  .grade-label.beginner { background: var(--blue); }
+  .grade-label.intermediate { background: #F59E0B; }
+  .grade-label.advanced { background: var(--claude-orange); }
+  .grade-label.expert { background: var(--purple); }
+  .grade-text { font-size: 0.88rem; color: #374151; }
+
+  /* ===== TIER BADGE ===== */
+  .tier-badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tier-free { background: #E5E7EB; color: #374151; }
+  .tier-pro { background: #DBEAFE; color: #1D4ED8; }
+  .tier-max { background: linear-gradient(135deg, #FDE68A, #FCD34D); color: #92400E; }
+
+  /* ===== GOLDEN RULES ===== */
+  .golden-rules { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); border-radius: 16px; padding: 2.5rem; margin: 2rem 0; }
+  .golden-rules h2 { color: var(--gold); font-size: 1.4rem; font-weight: 900; margin-bottom: 1.5rem; text-align: center; }
+  .golden-rule { display: flex; gap: 1rem; align-items: flex-start; margin-bottom: 1.25rem; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1rem 1.25rem; border: 1px solid rgba(212,168,67,0.15); }
+  .golden-rule-num { background: var(--gold); color: var(--navy); width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 800; flex-shrink: 0; }
+  .golden-rule-text { color: rgba(255,255,255,0.9); font-size: 0.92rem; line-height: 1.5; }
+  .golden-rule-text strong { color: var(--gold); }
+
+  .footer { background: var(--navy); padding: 1.5rem 2rem; text-align: center; }
+  .footer p { color: rgba(255,255,255,0.4); font-size: 0.8rem; }
+  .footer a { color: var(--gold); text-decoration: none; }
+
+  @media (max-width: 640px) {
+    .header-inner h1 { font-size: 1.6rem; }
+    .section { padding: 1.5rem; }
+    .toc-list { grid-template-columns: 1fr; }
+    .golden-rules { padding: 1.5rem; }
+    .compare-table { font-size: 0.78rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-icon">&#9889;</div>
+    <h1>CLAUDE <span>MASTERY</span> PLAYBOOK</h1>
+    <p class="header-sub">
+      Chat. Cowork. Code. The complete guide to every mode, feature, shortcut, and expert workflow — plus what your Max plan actually gives you and how it powers Boots On The Ground AI.
+    </p>
+    <div class="header-meta">
+      <div class="header-meta-item">18 Sections</div>
+      <div class="header-meta-item">10 Golden Rules</div>
+      <div class="header-meta-item">Skill Grading</div>
+      <div class="header-meta-item">Feb 2026</div>
+    </div>
+  </div>
+</header>
+
+<div class="back-link">
+  <a href="index.html">&#8592; Back to Playbook Hub</a>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <div class="toc-box">
+    <div class="toc-title">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">1</span> The Claude Ecosystem</a></li>
+      <li><a href="#s2"><span class="toc-num">2</span> Claude Chat — The Foundation</a></li>
+      <li><a href="#s3"><span class="toc-num">3</span> Claude Cowork — The Desktop Agent</a></li>
+      <li><a href="#s4"><span class="toc-num">4</span> Claude Code — The Terminal Powerhouse</a></li>
+      <li><a href="#s5"><span class="toc-num">5</span> Getting Started with Claude Code</a></li>
+      <li><a href="#s6"><span class="toc-num">6</span> Every Slash Command Explained</a></li>
+      <li><a href="#s7"><span class="toc-num">7</span> Keyboard Shortcuts & Vim Mode</a></li>
+      <li><a href="#s8"><span class="toc-num">8</span> Permission Modes</a></li>
+      <li><a href="#s9"><span class="toc-num">9</span> Plan Mode — Think Before You Build</a></li>
+      <li><a href="#s10"><span class="toc-num">10</span> CLAUDE.md — Your Project Brain</a></li>
+      <li><a href="#s11"><span class="toc-num">11</span> Custom Commands & Skills</a></li>
+      <li><a href="#s12"><span class="toc-num">12</span> Subagents & Agent Orchestration</a></li>
+      <li><a href="#s13"><span class="toc-num">13</span> MCP Servers — Supercharging Claude</a></li>
+      <li><a href="#s14"><span class="toc-num">14</span> Expert Workflows</a></li>
+      <li><a href="#s15"><span class="toc-num">15</span> Free vs Pro vs Max — The Full Breakdown</a></li>
+      <li><a href="#s16"><span class="toc-num">16</span> What Max Gives Boots On The Ground AI</a></li>
+      <li><a href="#s17"><span class="toc-num">17</span> Grade Your Claude Skills</a></li>
+      <li><a href="#s18"><span class="toc-num">18</span> Token Usage Across Modes</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- SECTION 1 -->
+  <div class="section" id="s1">
+    <div class="section-num">1</div>
+    <h2>The Claude Ecosystem</h2>
+    <p>Claude isn't just one thing. It's three distinct tools, each designed for a different way of working. Think of them as three gears — same engine, different speeds.</p>
+
+    <div class="diagram">┌──────────────────────────────────────────────────────────┐
+│                    CLAUDE DESKTOP APP                     │
+│                                                          │
+│   ┌─────────────┐  ┌──────────────┐  ┌──────────────┐  │
+│   │  &#128172; CHAT     │  │  &#129309; COWORK    │  │  &#9000; CODE      │  │
+│   │             │  │              │  │              │  │
+│   │ Conversation│  │ Desktop Agent│  │ Terminal     │  │
+│   │ Q&A, Ideas  │  │ File Actions │  │ Full Dev     │  │
+│   │ Research    │  │ Automation   │  │ Environment  │  │
+│   │             │  │              │  │              │  │
+│   │ Free/Pro/Max│  │ Max Only     │  │ Pro/Max      │  │
+│   └─────────────┘  └──────────────┘  └──────────────┘  │
+│                                                          │
+│   Lowest Tokens ──────────────────── Highest Tokens      │
+│   Least Power   ──────────────────── Most Power          │
+└──────────────────────────────────────────────────────────┘</div>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; Key Insight</div>
+      <p>Each mode consumes tokens differently. Chat is the lightest. Cowork uses more because it plans and executes multi-step tasks. Code uses the most because it reads files, writes code, runs commands, and orchestrates agents — all in tokens.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section" id="s2">
+    <div class="section-num">2</div>
+    <h2>Claude Chat — The Foundation</h2>
+    <p>This is the Claude most people know. Open claude.ai or the desktop app, type a question, get an answer.</p>
+
+    <h3>What Chat does well</h3>
+    <ul>
+      <li><strong>Research and brainstorming</strong> — ask questions, explore ideas, get explanations</li>
+      <li><strong>Content creation</strong> — write emails, blog posts, marketing copy</li>
+      <li><strong>Code snippets</strong> — get code examples (but it can't run them)</li>
+      <li><strong>Document analysis</strong> — upload PDFs, images, spreadsheets for review</li>
+      <li><strong>Web search</strong> — Claude can search the internet for current info</li>
+    </ul>
+
+    <h3>What Chat cannot do</h3>
+    <ul>
+      <li>Touch your filesystem (can't create, edit, or move files)</li>
+      <li>Run terminal commands</li>
+      <li>Execute code</li>
+      <li>Interact with external tools or services</li>
+    </ul>
+
+    <h3>Chat features worth knowing</h3>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>What It Does</th><th>Tier</th></tr>
+      <tr><td>Projects</td><td>Organize conversations with shared context docs</td><td><span class="tier-badge tier-pro">Pro+</span></td></tr>
+      <tr><td>Artifacts</td><td>Interactive code previews, documents, diagrams</td><td><span class="tier-badge tier-free">All</span></td></tr>
+      <tr><td>Web Search</td><td>Real-time internet searches in conversation</td><td><span class="tier-badge tier-free">All</span></td></tr>
+      <tr><td>File Upload</td><td>Analyze PDFs, images, CSVs, code files</td><td><span class="tier-badge tier-free">All</span></td></tr>
+      <tr><td>Extended Thinking</td><td>Deeper reasoning for complex problems</td><td><span class="tier-badge tier-pro">Pro+</span></td></tr>
+      <tr><td>Memory</td><td>Remembers preferences across conversations</td><td><span class="tier-badge tier-max">Max</span></td></tr>
+      <tr><td>Google Workspace</td><td>Connect to Google Docs, Drive, Calendar</td><td><span class="tier-badge tier-pro">Pro+</span></td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>Use <strong>Projects</strong> to give Claude persistent context. Upload your brand guidelines, product docs, or code standards into a project, and every conversation in that project has that context automatically — without you re-explaining every time.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section" id="s3">
+    <div class="section-num">3</div>
+    <h2>Claude Cowork — The Desktop Agent</h2>
+    <p>Cowork is Claude Code's consumer-friendly sibling. It runs inside the Claude desktop app and can <strong>actually do things on your computer</strong> — create files, organize folders, process documents — all through a visual interface.</p>
+
+    <h3>What makes Cowork different</h3>
+    <table class="compare-table">
+      <tr><th>Chat</th><th>Cowork</th></tr>
+      <tr><td>Answers questions</td><td>Completes tasks</td></tr>
+      <tr><td>Suggests what to do</td><td>Actually does it</td></tr>
+      <tr><td>You copy-paste results</td><td>Claude writes files directly</td></tr>
+      <tr><td>One response at a time</td><td>Plans multi-step workflows</td></tr>
+      <tr><td>Lightweight usage</td><td>Heavier token usage</td></tr>
+    </table>
+
+    <h3>Great use cases for Cowork</h3>
+    <ul>
+      <li><strong>File organization</strong> — "Sort my Downloads folder by type and date"</li>
+      <li><strong>Data processing</strong> — "Read this CSV and create a summary report"</li>
+      <li><strong>Content creation</strong> — "Create a branded PDF playbook from these notes"</li>
+      <li><strong>Research compilation</strong> — "Research X topic and save findings to a document"</li>
+      <li><strong>Batch operations</strong> — "Rename all files in this folder following this pattern"</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">&#9888;&#65039; Important Limitations</div>
+      <p><strong>Max plan required</strong> ($100-$200/month). macOS only (for now). No memory across sessions. The desktop app must stay open while tasks run. Cowork uses significantly more tokens than Chat because of multi-step task execution.</p>
+    </div>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; Boots On The Ground AI Workflow</div>
+      <p>This is how Damara creates playbooks — Cowork handles the branding, formatting, and content generation, then outputs the files that get pushed to the GitHub Pages repo. Chat would just tell you what to do. Cowork actually does it.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4">
+    <div class="section-num">4</div>
+    <h2>Claude Code — The Terminal Powerhouse</h2>
+    <p>Claude Code is the most powerful way to use Claude. It runs in your terminal and has full access to your development environment — it can read your codebase, write files, run commands, execute tests, commit to git, deploy to production, and orchestrate teams of AI agents.</p>
+
+    <h3>What Claude Code can do that nothing else can</h3>
+    <ul>
+      <li><strong>Read your entire codebase</strong> — understands project structure, dependencies, patterns</li>
+      <li><strong>Write and edit files</strong> — makes surgical changes or creates new files</li>
+      <li><strong>Run terminal commands</strong> — git, npm, docker, deploy scripts, anything</li>
+      <li><strong>Execute tests</strong> — run your test suite and fix failures</li>
+      <li><strong>Orchestrate agents</strong> — spawn subagents for parallel work</li>
+      <li><strong>Connect to external tools</strong> — via MCP servers (databases, APIs, Figma, Notion)</li>
+      <li><strong>Plan before acting</strong> — Plan Mode for thinking before building</li>
+    </ul>
+
+    <div class="diagram">What happens when you type in Claude Code:
+
+You: "Add a search bar to the dashboard"
+
+Claude Code:
+  1. &#128269; Reads your codebase (finds components, styles, patterns)
+  2. &#128736; Plans the approach (which files to modify)
+  3. &#9999;  Writes the code (creates/edits files)
+  4. &#9654;  Runs it (starts dev server, checks for errors)
+  5. &#128295; Fixes issues (reads errors, adjusts code)
+  6. &#9989; Verifies (runs tests, confirms it works)
+
+All in one conversation. All from your terminal.</div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; Why Terminal?</div>
+      <p>The terminal gives Claude Code direct access to your system. No browser sandbox, no file upload limits, no copy-paste. It works WITH your tools — your git, your package manager, your deployment pipeline. That's why it's more powerful than Chat or Cowork for development work.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section" id="s5">
+    <div class="section-num">5</div>
+    <h2>Getting Started with Claude Code</h2>
+
+    <h3>Installation</h3>
+    <div class="code-block"><span class="comment"># Install Claude Code globally</span>
+<span class="cmd">npm install -g @anthropic-ai/claude-code</span>
+
+<span class="comment"># Verify installation</span>
+<span class="cmd">claude --version</span>
+
+<span class="comment"># Check for issues</span>
+<span class="cmd">claude /doctor</span>
+
+<span class="comment"># Launch Claude Code</span>
+<span class="cmd">claude</span>
+
+<span class="comment"># Launch in a specific project</span>
+<span class="cmd">cd ~/my-project && claude</span></div>
+
+    <h3>First-time setup checklist</h3>
+    <ol>
+      <li>Install Node.js (v18+) if you don't have it</li>
+      <li>Install Claude Code via npm</li>
+      <li>Run <code>claude</code> and authenticate with your Anthropic account</li>
+      <li>Navigate to a project folder and run <code>claude</code> from there</li>
+      <li>Create a <code>CLAUDE.md</code> in your project root (Section 10)</li>
+    </ol>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>Always launch Claude Code from your project's root directory. Claude reads the directory structure to understand your project. Launching from <code>~</code> (home) means it sees everything — which is slower and less focused.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section" id="s6">
+    <div class="section-num">6</div>
+    <h2>Every Slash Command Explained</h2>
+    <p>Slash commands are Claude Code's power menu. Type <code>/</code> to see them all.</p>
+
+    <h3>Essential commands (use these daily)</h3>
+    <table class="compare-table">
+      <tr><th>Command</th><th>What It Does</th><th>When to Use It</th></tr>
+      <tr><td><code>/help</code></td><td>Shows all available commands</td><td>When you forget a command</td></tr>
+      <tr><td><code>/compact</code></td><td>Compresses conversation history</td><td>When context gets long, saves tokens</td></tr>
+      <tr><td><code>/cost</code></td><td>Shows token usage and cost for session</td><td>Check how much you're spending</td></tr>
+      <tr><td><code>/model</code></td><td>Switch models (sonnet, opus, haiku)</td><td>Use haiku for simple tasks, opus for complex</td></tr>
+      <tr><td><code>/clear</code></td><td>Clear conversation history</td><td>Start fresh on a new task</td></tr>
+      <tr><td><code>/memory</code></td><td>Edit your CLAUDE.md file</td><td>Update project instructions</td></tr>
+    </table>
+
+    <h3>Power user commands</h3>
+    <table class="compare-table">
+      <tr><th>Command</th><th>What It Does</th><th>When to Use It</th></tr>
+      <tr><td><code>/review</code></td><td>Code review of recent changes</td><td>Before committing, get a second opinion</td></tr>
+      <tr><td><code>/plan</code></td><td>Enter Plan Mode (read-only exploration)</td><td>Research before making changes</td></tr>
+      <tr><td><code>/vim</code></td><td>Toggle Vim keybindings</td><td>If you're a Vim user</td></tr>
+      <tr><td><code>/permissions</code></td><td>Manage file access permissions</td><td>Control what Claude can read/write</td></tr>
+      <tr><td><code>/context</code></td><td>View current context usage</td><td>See how full your context window is</td></tr>
+      <tr><td><code>/doctor</code></td><td>Diagnose installation issues</td><td>When something isn't working right</td></tr>
+      <tr><td><code>/agents</code></td><td>Manage custom subagents</td><td>Set up specialized AI assistants</td></tr>
+      <tr><td><code>/rewind</code></td><td>Roll back conversation and code</td><td>Undo mistakes, try a different approach</td></tr>
+      <tr><td><code>/status</code></td><td>View current session status</td><td>Check model, mode, and settings</td></tr>
+    </table>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; The /compact Secret</div>
+      <p><code>/compact</code> is your best friend for long sessions. When your conversation gets long, context fills up and Claude starts losing earlier details. Running <code>/compact</code> compresses the history, freeing up space and <strong>reducing token costs on subsequent messages</strong>. Use it every 15-20 messages.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section" id="s7">
+    <div class="section-num">7</div>
+    <h2>Keyboard Shortcuts & Vim Mode</h2>
+
+    <h3>Essential keyboard shortcuts</h3>
+    <table class="compare-table">
+      <tr><th>Shortcut</th><th>Action</th></tr>
+      <tr><td><code>Enter</code></td><td>Send message</td></tr>
+      <tr><td><code>Shift + Enter</code></td><td>New line (without sending)</td></tr>
+      <tr><td><code>Ctrl + C</code></td><td>Cancel current generation</td></tr>
+      <tr><td><code>Ctrl + D</code></td><td>Exit Claude Code</td></tr>
+      <tr><td><code>Ctrl + L</code></td><td>Clear terminal screen</td></tr>
+      <tr><td><code>Esc + Esc</code></td><td>Edit your previous message</td></tr>
+      <tr><td><code>Shift + Tab</code></td><td>Cycle through permission modes</td></tr>
+      <tr><td><code>Ctrl + T</code></td><td>Toggle task list</td></tr>
+    </table>
+
+    <h3>Vim Mode</h3>
+    <p>If you're a Vim user, type <code>/vim</code> to enable Vim keybindings in the input area. This gives you:</p>
+    <ul>
+      <li><strong>Insert mode</strong> — type normally (default)</li>
+      <li><strong>Normal mode</strong> — navigate with h/j/k/l, use w/b for word movement</li>
+      <li><strong>Esc</strong> switches from INSERT to NORMAL (not cancel)</li>
+      <li>Ctrl shortcuts still work in both modes</li>
+    </ul>
+
+    <h3>Custom keybindings</h3>
+    <div class="code-block"><span class="comment"># Open keybindings config</span>
+<span class="cmd">/keybindings</span>
+
+<span class="comment"># This creates/opens ~/.claude/keybindings.json</span>
+<span class="comment"># Changes apply immediately — no restart needed</span></div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p><strong>Esc + Esc</strong> (double escape) to edit your last message is a game-changer. Made a typo? Want to rephrase? Double-tap Esc instead of retyping the whole thing.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section" id="s8">
+    <div class="section-num">8</div>
+    <h2>Permission Modes</h2>
+    <p>Claude Code has five permission modes that control how much freedom Claude has. Think of them as safety levels.</p>
+
+    <table class="compare-table">
+      <tr><th>Mode</th><th>What Claude Can Do</th><th>Best For</th></tr>
+      <tr><td><strong>Default</strong></td><td>Asks permission for every file edit and command</td><td>Learning, unfamiliar codebases</td></tr>
+      <tr><td><strong>Accept Edits</strong></td><td>Auto-approves file edits, asks for commands</td><td>Day-to-day development</td></tr>
+      <tr><td><strong>Plan Mode</strong></td><td>Read-only — can search and read, cannot change anything</td><td>Exploring before building</td></tr>
+      <tr><td><strong>Don't Ask</strong></td><td>Auto-approves everything</td><td>Trusted automation tasks</td></tr>
+      <tr><td><strong>Bypass</strong></td><td>No restrictions at all</td><td>Isolated environments only (containers)</td></tr>
+    </table>
+
+    <div class="code-block"><span class="comment"># Cycle through modes</span>
+Press <span class="highlight">Shift + Tab</span> to cycle: Default → Accept Edits → Plan → ...
+
+<span class="comment"># Or set via slash command</span>
+<span class="cmd">/permissions</span></div>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; Safety Warning</div>
+      <p><strong>Never use "Bypass" mode</strong> unless you're in an isolated container or VM. It gives Claude unrestricted access to run any command — including destructive ones. "Don't Ask" is nearly as risky. Stick with Default or Accept Edits for normal work.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="section" id="s9">
+    <div class="section-num">9</div>
+    <h2>Plan Mode — Think Before You Build</h2>
+    <p>Plan Mode is one of Claude Code's most underrated features. It forces Claude to <strong>research and think before making any changes</strong>.</p>
+
+    <h3>How it works</h3>
+    <div class="diagram">Normal Mode:          Plan Mode:
+You ask ──> Claude    You ask ──> Claude
+acts immediately      reads, searches, plans
+                      presents approach
+                      YOU approve
+                      THEN Claude acts</div>
+
+    <h3>What Claude can do in Plan Mode</h3>
+    <ul>
+      <li><strong>Read files</strong> — examine your codebase</li>
+      <li><strong>Search</strong> — find files, search content with Glob and Grep</li>
+      <li><strong>List directories</strong> — understand project structure</li>
+      <li><strong>Research</strong> — gather context before proposing changes</li>
+    </ul>
+
+    <h3>What Claude CANNOT do in Plan Mode</h3>
+    <ul>
+      <li>Edit or create files</li>
+      <li>Run commands</li>
+      <li>Modify anything on your system</li>
+    </ul>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; Expert Pattern</div>
+      <p>The best developers use Plan Mode like a Senior Architect review. Start every significant task in Plan Mode: let Claude explore, understand, and propose. Review the plan. THEN switch to normal mode to execute. This prevents wasted work and token costs from going down the wrong path.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="section" id="s10">
+    <div class="section-num">10</div>
+    <h2>CLAUDE.md — Your Project Brain</h2>
+    <p><code>CLAUDE.md</code> is a special file that Claude Code reads automatically every time you start a session in that project. It's your project's instruction manual for Claude.</p>
+
+    <h3>Where to put it</h3>
+    <div class="code-block"><span class="comment"># Project-level (most common)</span>
+~/my-project/<span class="highlight">CLAUDE.md</span>          <span class="comment"># Claude reads this when you run `claude` in my-project/</span>
+
+<span class="comment"># Global (applies to ALL projects)</span>
+~/.claude/<span class="highlight">CLAUDE.md</span>              <span class="comment"># Always loaded, every session</span>
+
+<span class="comment"># Nested (for specific directories)</span>
+~/my-project/src/<span class="highlight">CLAUDE.md</span>    <span class="comment"># Extra context for the src/ directory</span></div>
+
+    <h3>What to put in CLAUDE.md</h3>
+    <div class="code-block"><span class="comment"># Example CLAUDE.md for a project</span>
+
+<span class="highlight"># Project: Boots On The Ground AI Website</span>
+
+<span class="orange">## Tech Stack</span>
+- Next.js 14 with App Router
+- TypeScript (strict mode)
+- Tailwind CSS
+- Supabase for database
+- Deployed on Fly.io
+
+<span class="orange">## Coding Standards</span>
+- Use TypeScript for all new files
+- Components go in src/components/
+- Use server components by default
+- Client components only when needed (interactivity)
+
+<span class="orange">## Commands</span>
+- Dev server: npm run dev
+- Build: npm run build
+- Test: npm test
+- Deploy: fly deploy
+
+<span class="orange">## Important Notes</span>
+- Never modify .env files
+- Always run tests before committing
+- Use conventional commit messages
+- Brand colors: navy #1B2A4A, gold #D4A843</div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>Think of CLAUDE.md like onboarding a new developer. What would they need to know on day one? Put that in CLAUDE.md. But keep it concise — CLAUDE.md is loaded as context every session, which means <strong>every token in it costs you on every message</strong> (see Token Management Playbook).</p>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="section" id="s11">
+    <div class="section-num">11</div>
+    <h2>Custom Commands & Skills</h2>
+
+    <h3>Custom slash commands</h3>
+    <p>You can create your own slash commands by adding Markdown files to <code>.claude/commands/</code> in your project.</p>
+
+    <div class="code-block"><span class="comment"># Create a custom /deploy command</span>
+mkdir -p .claude/commands
+cat > .claude/commands/deploy.md << 'EOF'
+Run the deployment checklist:
+1. Run all tests
+2. Build the project
+3. Check for TypeScript errors
+4. If everything passes, deploy to Fly.io
+5. Verify the deployment is live
+EOF
+
+<span class="comment"># Now you can type /deploy in Claude Code!</span></div>
+
+    <h3>Skills (model-invoked)</h3>
+    <p>Skills are more advanced than commands. They live in <code>.claude/skills/</code> and Claude can invoke them automatically when relevant.</p>
+
+    <div class="code-block"><span class="comment"># .claude/skills/code-review.md</span>
+---
+name: code-review
+description: Reviews code for quality and security
+tools: [Read, Grep, Glob]
+---
+
+Review the changed files for:
+- Security vulnerabilities (OWASP Top 10)
+- Performance issues
+- Code style consistency
+- Missing error handling
+- Test coverage gaps</div>
+
+    <h3>Commands vs Skills</h3>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Commands</th><th>Skills</th></tr>
+      <tr><td>Triggered by</td><td>You type /command</td><td>Claude invokes automatically</td></tr>
+      <tr><td>Complexity</td><td>Simple prompt in one file</td><td>Can include tool restrictions, agents</td></tr>
+      <tr><td>Location</td><td>.claude/commands/</td><td>.claude/skills/</td></tr>
+      <tr><td>Parameters</td><td>$ARGUMENTS placeholder</td><td>YAML frontmatter config</td></tr>
+    </table>
+  </div>
+
+  <!-- SECTION 12 -->
+  <div class="section" id="s12">
+    <div class="section-num">12</div>
+    <h2>Subagents & Agent Orchestration</h2>
+    <p>This is where Claude Code becomes a team, not just a tool. Subagents are specialized AI assistants that Claude can spawn to handle specific tasks — each running in its own context window.</p>
+
+    <h3>Built-in subagents</h3>
+    <table class="compare-table">
+      <tr><th>Agent</th><th>Purpose</th><th>Tools Available</th></tr>
+      <tr><td><strong>Explore</strong></td><td>Fast codebase search and analysis</td><td>Read-only (Glob, Grep, Read)</td></tr>
+      <tr><td><strong>Plan</strong></td><td>Research and context gathering for plans</td><td>Read-only</td></tr>
+      <tr><td><strong>General Purpose</strong></td><td>Complex multi-step tasks</td><td>Full toolset</td></tr>
+    </table>
+
+    <h3>Custom subagents</h3>
+    <div class="code-block"><span class="comment"># .claude/agents/security-reviewer.md</span>
+---
+name: security-reviewer
+description: Reviews code for security vulnerabilities
+tools: [Read, Grep, Glob]
+model: sonnet
+---
+
+You are a security expert. Review code for:
+- SQL injection, XSS, CSRF
+- Hardcoded secrets or credentials
+- Insecure authentication patterns
+- Missing input validation
+- OWASP Top 10 vulnerabilities</div>
+
+    <h3>Agent Teams (experimental)</h3>
+    <p>The most advanced orchestration pattern. Claude creates a team lead, spawns independent teammates, and coordinates their work through a shared task list.</p>
+
+    <div class="diagram">Agent Teams Workflow:
+
+Team Lead (Claude Code)
+  ├── Teammate 1: "Build the API endpoint"
+  ├── Teammate 2: "Write the frontend component"
+  └── Teammate 3: "Add tests for both"
+
+Each teammate:
+  - Runs in its own context window
+  - Has its own set of tools
+  - Can see the shared task list
+  - Flags dependencies to avoid conflicts
+  - Reports back to the team lead</div>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; Token Warning</div>
+      <p>Agent orchestration is powerful but <strong>token-expensive</strong>. Each subagent has its own context window, meaning you're paying for multiple parallel conversations. A 3-agent team can easily use 3-5x the tokens of a single conversation. Use agents for genuinely parallelizable work, not simple sequential tasks.</p>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Best Practice</div>
+      <p>Limit yourself to 3-4 subagents maximum. More than that and the coordination overhead (also in tokens) outweighs the benefit. Give each agent a clear, specific task with defined scope.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 13 -->
+  <div class="section" id="s13">
+    <div class="section-num">13</div>
+    <h2>MCP Servers — Supercharging Claude</h2>
+    <p><strong>MCP (Model Context Protocol)</strong> servers let Claude Code connect to external tools and services. Think of them as plugins that give Claude new superpowers.</p>
+
+    <h3>What MCP servers enable</h3>
+    <table class="compare-table">
+      <tr><th>MCP Server</th><th>What Claude Can Do</th></tr>
+      <tr><td>Browser / Playwright</td><td>Navigate websites, take screenshots, test UIs</td></tr>
+      <tr><td>Database (Postgres, etc.)</td><td>Query databases, analyze data, run migrations</td></tr>
+      <tr><td>Figma</td><td>Read designs, implement UI from mockups</td></tr>
+      <tr><td>Notion</td><td>Read/write docs, sync project info</td></tr>
+      <tr><td>GitHub</td><td>Manage issues, PRs, reviews</td></tr>
+      <tr><td>Sentry</td><td>Analyze errors, debug production issues</td></tr>
+      <tr><td>Slack</td><td>Send messages, read channels</td></tr>
+    </table>
+
+    <h3>Adding an MCP server</h3>
+    <div class="code-block"><span class="comment"># Add an MCP server to your project</span>
+<span class="cmd">claude mcp add</span>
+
+<span class="comment"># Example: Add a Postgres database connection</span>
+<span class="cmd">claude mcp add postgres-server --connection-string $DATABASE_URL</span>
+
+<span class="comment"># Now Claude can query your database directly!</span></div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; Real-World Use</div>
+      <p>Connect Sentry via MCP, and you can say "Look at the top 5 errors in production and fix them." Claude reads the errors from Sentry, finds the code, and patches it. That's a workflow that used to take hours, done in minutes.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 14 -->
+  <div class="section" id="s14">
+    <div class="section-num">14</div>
+    <h2>Expert Workflows</h2>
+    <p>These are the patterns that separate casual users from power users.</p>
+
+    <h4>1. The Plan-Execute-Review Loop</h4>
+    <div class="code-block"><span class="comment"># Step 1: Enter Plan Mode</span>
+<span class="cmd">/plan</span>
+"Analyze the authentication system and propose improvements"
+
+<span class="comment"># Step 2: Review the plan, then switch to normal mode</span>
+Press <span class="highlight">Shift+Tab</span> to switch back
+
+<span class="comment"># Step 3: Execute</span>
+"Implement the plan you just proposed"
+
+<span class="comment"># Step 4: Review</span>
+<span class="cmd">/review</span></div>
+
+    <h4>2. Model Switching by Task</h4>
+    <div class="code-block"><span class="comment"># Use Haiku for quick lookups (cheap, fast)</span>
+<span class="cmd">/model haiku</span>
+"What file handles the login route?"
+
+<span class="comment"># Switch to Sonnet for implementation (balanced)</span>
+<span class="cmd">/model sonnet</span>
+"Add rate limiting to the login endpoint"
+
+<span class="comment"># Switch to Opus for complex architecture (powerful)</span>
+<span class="cmd">/model opus</span>
+"Redesign the authentication system to support OAuth2 and SAML"</div>
+
+    <h4>3. The Compact Ritual</h4>
+    <div class="code-block"><span class="comment"># Every 15-20 messages, compress your context</span>
+<span class="cmd">/compact</span>
+
+<span class="comment"># Check your costs periodically</span>
+<span class="cmd">/cost</span>
+
+<span class="comment"># Start a new session for unrelated tasks</span>
+<span class="cmd">/clear</span></div>
+
+    <h4>4. CLI-First External Interactions</h4>
+    <div class="code-block"><span class="comment"># Instead of describing what to do, tell Claude to use CLI tools</span>
+
+"Use gh to create a pull request for my changes"
+"Use fly deploy to push this to production"
+"Use sentry-cli to check recent errors"
+"Use docker compose up to start the dev environment"
+
+<span class="comment"># CLI tools are token-efficient — they return structured data</span>
+<span class="comment"># instead of Claude having to parse web pages</span></div>
+
+    <h4>5. The /rewind Safety Net</h4>
+    <div class="code-block"><span class="comment"># Made a wrong turn? Don't start over.</span>
+<span class="cmd">/rewind</span>
+
+<span class="comment"># This rolls back both the conversation AND code changes</span>
+<span class="comment"># to an earlier checkpoint. Pick where to restore to.</span>
+<span class="comment"># Then try a different approach.</span></div>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; The Expert Mindset</div>
+      <p>Experts treat Claude Code like a senior developer on their team, not a magic box. They give clear context, review output critically, use Plan Mode to align before executing, switch models based on task complexity, and manage their token budget like a project budget.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 15 -->
+  <div class="section" id="s15">
+    <div class="section-num">15</div>
+    <h2>Free vs Pro vs Max — The Full Breakdown</h2>
+
+    <table class="compare-table">
+      <tr>
+        <th>Feature</th>
+        <th><span class="tier-badge tier-free">Free</span></th>
+        <th><span class="tier-badge tier-pro">Pro $20/mo</span></th>
+        <th><span class="tier-badge tier-max">Max $100-200/mo</span></th>
+      </tr>
+      <tr><td><strong>Claude Chat</strong></td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Claude Code</strong></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Claude Cowork</strong></td><td>No</td><td>No</td><td>Yes</td></tr>
+      <tr><td><strong>Messages (per 5 hrs)</strong></td><td>~30-100</td><td>~45 (standard)</td><td>~225 (5x) / ~900 (20x)</td></tr>
+      <tr><td><strong>Usage Multiplier</strong></td><td>1x</td><td>1x</td><td>5x or 20x vs Pro</td></tr>
+      <tr><td><strong>Extended Thinking</strong></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Projects</strong></td><td>Limited</td><td>Unlimited</td><td>Unlimited</td></tr>
+      <tr><td><strong>Memory</strong></td><td>No</td><td>No</td><td>Yes</td></tr>
+      <tr><td><strong>Priority Access</strong></td><td>No</td><td>No</td><td>Yes (peak times)</td></tr>
+      <tr><td><strong>Early Features</strong></td><td>No</td><td>No</td><td>Yes</td></tr>
+      <tr><td><strong>Google Workspace</strong></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Remote MCP</strong></td><td>No</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td><strong>Web Search</strong></td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
+      <tr class="highlight-row"><td><strong>Extra Usage (API overflow)</strong></td><td>No</td><td>Yes (pay as you go)</td><td>Yes (pay as you go)</td></tr>
+    </table>
+
+    <h3>Max 5x ($100/mo) vs Max 20x ($200/mo)</h3>
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Max 5x</th><th>Max 20x</th></tr>
+      <tr><td>Messages per 5-hour window</td><td>~225</td><td>~900</td></tr>
+      <tr><td>Usage vs Pro</td><td>5x more</td><td>20x more</td></tr>
+      <tr><td>Claude Code usage</td><td>Generous</td><td>Virtually unlimited</td></tr>
+      <tr><td>Cowork access</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Best for</td><td>Power users, daily devs</td><td>All-day coding, agencies, heavy automation</td></tr>
+    </table>
+
+    <h3>Extra Usage (the overflow safety net)</h3>
+    <p>When you hit your included limits, Claude doesn't stop — it switches to <strong>pay-as-you-go at standard API rates</strong>. You opt into this in settings. This means you never get cut off mid-task.</p>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; The $50 Opus 4.6 Credit</div>
+      <p>Anthropic gave existing Pro and Max subscribers $50 in free Extra Usage credits to try Opus 4.6 (had to be claimed by Feb 16, 2026). This is the kind of early access perk Max subscribers regularly get.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 16 -->
+  <div class="section" id="s16">
+    <div class="section-num">16</div>
+    <h2>What Max Gives Boots On The Ground AI</h2>
+    <p>Here's specifically what the Max tier unlocks for Damara and the Boots On The Ground AI workflow:</p>
+
+    <h3>The Boots playbook creation workflow</h3>
+    <div class="diagram">1. &#128172; Chat — Brainstorm playbook topics and outline content
+2. &#129309; Cowork — Generate branded playbook content, format files
+3. &#9000; Code — Build the HTML, update index.html, push to GitHub Pages
+
+All three modes. All in one subscription. That's Max.</div>
+
+    <h3>What Max enables that Pro doesn't</h3>
+    <table class="compare-table">
+      <tr><th>Capability</th><th>How Boots Uses It</th></tr>
+      <tr><td><strong>Cowork (Max only)</strong></td><td>Create branded playbooks, process files, automate content generation without touching a terminal</td></tr>
+      <tr><td><strong>5-20x usage</strong></td><td>Build multiple playbooks in one day without hitting limits</td></tr>
+      <tr><td><strong>Memory</strong></td><td>Claude remembers Boots branding (navy #1B2A4A, gold #D4A843), coding preferences, project structure</td></tr>
+      <tr><td><strong>Priority access</strong></td><td>No waiting during peak hours — critical when on a deadline</td></tr>
+      <tr><td><strong>Early features</strong></td><td>First access to new Claude capabilities (Agent Teams, new models)</td></tr>
+      <tr><td><strong>Extra Usage</strong></td><td>Never get cut off mid-playbook — overflow to API pricing seamlessly</td></tr>
+    </table>
+
+    <h3>The ROI math</h3>
+    <div class="code-block"><span class="comment">// What Boots gets from Max ($100-200/month):</span>
+
+<span class="highlight">Without Claude:</span>
+  - Hire a developer for playbooks:     <span class="orange">$2,000-5,000/playbook</span>
+  - Hire a designer for branding:       <span class="orange">$500-2,000/playbook</span>
+  - Manual GitHub Pages management:     <span class="orange">Hours of learning</span>
+  - Total for 7 playbooks:              <span class="orange">$17,500-$49,000</span>
+
+<span class="highlight">With Claude Max:</span>
+  - Monthly subscription:               <span class="cmd">$100-200/month</span>
+  - 7 playbooks created in weeks:       <span class="cmd">$200-400 total</span>
+  - Ongoing updates and new playbooks:  <span class="cmd">Included</span>
+  - Learning full-stack development:    <span class="cmd">Priceless</span></div>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; The Big Picture</div>
+      <p>Max isn't just "more messages." It's the difference between using Claude as a chatbot and using Claude as a full-stack development team. For Boots On The Ground AI, it means going from "I need to hire someone" to "I can build this myself" — for a fraction of the cost.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 17 -->
+  <div class="section" id="s17">
+    <div class="section-num">17</div>
+    <h2>Grade Your Claude Skills</h2>
+    <p>Where do you stand? Be honest. Use this as a roadmap — not a judgment. Every expert started at beginner.</p>
+
+    <h3>Level 1: Beginner</h3>
+    <div class="grade-card beginner">
+      <span class="grade-label beginner">Beginner</span>
+      <span class="grade-text">Use Claude Chat to ask questions and get answers</span>
+    </div>
+    <div class="grade-card beginner">
+      <span class="grade-label beginner">Beginner</span>
+      <span class="grade-text">Upload files for Claude to analyze</span>
+    </div>
+    <div class="grade-card beginner">
+      <span class="grade-label beginner">Beginner</span>
+      <span class="grade-text">Know the difference between Chat, Cowork, and Code</span>
+    </div>
+    <div class="grade-card beginner">
+      <span class="grade-label beginner">Beginner</span>
+      <span class="grade-text">Have Claude Code installed and can launch it</span>
+    </div>
+
+    <h3>Level 2: Intermediate</h3>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Use Claude Code for daily development tasks</span>
+    </div>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Know and use /compact, /cost, /model, /review</span>
+    </div>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Have a CLAUDE.md file in your projects</span>
+    </div>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Use Cowork for file automation and content creation</span>
+    </div>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Understand git basics: clone, branch, commit, push</span>
+    </div>
+    <div class="grade-card intermediate">
+      <span class="grade-label intermediate">Intermediate</span>
+      <span class="grade-text">Switch between models based on task complexity</span>
+    </div>
+
+    <h3>Level 3: Advanced</h3>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Use Plan Mode before every significant task</span>
+    </div>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Create custom slash commands for repeated workflows</span>
+    </div>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Connect MCP servers for external tools</span>
+    </div>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Manage token costs with /compact, model switching, and budget caps</span>
+    </div>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Use /rewind to safely experiment and roll back</span>
+    </div>
+    <div class="grade-card advanced">
+      <span class="grade-label advanced">Advanced</span>
+      <span class="grade-text">Create custom subagents for specialized tasks</span>
+    </div>
+
+    <h3>Level 4: Expert</h3>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Orchestrate Agent Teams for parallel development</span>
+    </div>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Build skills with YAML frontmatter and tool restrictions</span>
+    </div>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Use hooks to automate pre/post-action workflows</span>
+    </div>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Configure permission modes for different contexts</span>
+    </div>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Optimize CLAUDE.md for minimal token usage with maximum context</span>
+    </div>
+    <div class="grade-card expert">
+      <span class="grade-label expert">Expert</span>
+      <span class="grade-text">Use Claude Code SDK to build custom AI-powered tools</span>
+    </div>
+
+    <div class="callout callout-claude">
+      <div class="callout-title">&#9889; Where Is Damara?</div>
+      <p>Let's be real — you're solidly <strong>Intermediate heading into Advanced</strong>. You use Chat, Cowork, AND Code. You manage a GitHub Pages site. You understand tokens and costs. You're building branded content and pushing to production. The next steps: Plan Mode as a habit, custom commands, and MCP server connections. You're closer to Expert than you think.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 18 -->
+  <div class="section" id="s18">
+    <div class="section-num">18</div>
+    <h2>Token Usage Across Modes</h2>
+    <p>Not all modes are created equal when it comes to token consumption. Here's what each mode actually costs.</p>
+
+    <table class="compare-table">
+      <tr><th>Mode</th><th>Token Usage</th><th>Why</th></tr>
+      <tr><td><strong>Chat</strong> (simple Q&A)</td><td>Low (200-1,000 tokens)</td><td>Short exchanges, no tool use</td></tr>
+      <tr><td><strong>Chat</strong> (with files)</td><td>Medium (1,000-10,000)</td><td>File content counted as input tokens</td></tr>
+      <tr><td><strong>Cowork</strong> (task)</td><td>High (5,000-50,000)</td><td>Multi-step planning and execution</td></tr>
+      <tr><td><strong>Code</strong> (simple edit)</td><td>Medium (2,000-8,000)</td><td>Reads files, makes changes</td></tr>
+      <tr><td><strong>Code</strong> (feature build)</td><td>High (10,000-100,000)</td><td>Reads codebase, writes multiple files</td></tr>
+      <tr><td><strong>Code</strong> (agent teams)</td><td>Very High (50,000-500,000+)</td><td>Multiple parallel context windows</td></tr>
+    </table>
+
+    <h3>Where tokens go in Claude Code</h3>
+    <div class="diagram">Token breakdown for a typical Claude Code session:
+
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;  File reading (35%)     — reading your codebase
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;        Conversation history (28%) — re-sent every message
+&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;             Output/code writing (20%)
+&#9608;&#9608;&#9608;&#9608;                    System prompt + CLAUDE.md (12%)
+&#9608;&#9608;                       Tool definitions (5%)</div>
+
+    <h3>How to minimize token costs</h3>
+    <ol>
+      <li><strong>Use /compact regularly</strong> — compresses conversation history (the 28%)</li>
+      <li><strong>Keep CLAUDE.md lean</strong> — cuts the 12% on every message</li>
+      <li><strong>Switch to Haiku for simple tasks</strong> — same tokens, much cheaper per token</li>
+      <li><strong>Start new sessions for new tasks</strong> — don't carry unnecessary history</li>
+      <li><strong>Use Plan Mode first</strong> — avoids expensive false starts</li>
+      <li><strong>Be specific in prompts</strong> — vague prompts cause Claude to read more files</li>
+      <li><strong>Check /cost periodically</strong> — awareness prevents surprises</li>
+    </ol>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; The Max Advantage</div>
+      <p>On Max 20x, you get ~900 messages per 5-hour window. That's roughly 180 messages per hour. Even with heavy Claude Code usage, most developers never hit that limit. And if you do, Extra Usage kicks in at API rates — you're never cut off.</p>
+    </div>
+  </div>
+
+  <!-- GOLDEN RULES -->
+  <div class="golden-rules" id="golden-rules">
+    <h2>&#127942; 10 Golden Rules of Claude Mastery</h2>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">1</div>
+      <div class="golden-rule-text"><strong>Use the right mode for the job.</strong> Chat for thinking, Cowork for desktop automation, Code for development. Using Chat when you need Code is like bringing a knife to a gunfight.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">2</div>
+      <div class="golden-rule-text"><strong>Plan before you build.</strong> Enter Plan Mode with /plan before every significant task. Let Claude research and propose. Approve, then execute. This prevents expensive wrong turns.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">3</div>
+      <div class="golden-rule-text"><strong>Switch models by task complexity.</strong> Haiku for quick lookups. Sonnet for day-to-day coding. Opus for complex architecture. Using /model is the easiest way to balance quality and cost.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">4</div>
+      <div class="golden-rule-text"><strong>Run /compact every 15-20 messages.</strong> Long conversations bloat your context and cost more with every message. Compacting is free and saves you tokens and money.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">5</div>
+      <div class="golden-rule-text"><strong>Create a CLAUDE.md for every project.</strong> It's like onboarding a new team member — once. Include tech stack, coding standards, key commands, and important conventions. Keep it lean (tokens add up).</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">6</div>
+      <div class="golden-rule-text"><strong>Build custom commands for repetitive workflows.</strong> If you do something more than twice, make it a /command. Deploy scripts, review checklists, test routines — automate the patterns.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">7</div>
+      <div class="golden-rule-text"><strong>Use /cost and /context as habit.</strong> Check your token usage and context fill level regularly. Awareness prevents budget surprises and context overflow.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">8</div>
+      <div class="golden-rule-text"><strong>Be specific in your prompts.</strong> "Fix the login bug in src/auth/login.ts" uses fewer tokens than "something is wrong with login." Specificity means Claude reads fewer files and makes fewer guesses.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">9</div>
+      <div class="golden-rule-text"><strong>Use /rewind as your safety net.</strong> Experimentation is cheap when you can roll back. Try bold approaches knowing you can always rewind to a known good state.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">10</div>
+      <div class="golden-rule-text"><strong>Claude is your teammate, not a magic box.</strong> Give context. Review output. Iterate. The best results come from treating Claude like a senior developer you're pairing with — not a genie you make wishes to.</div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="footer">
+  <p>&copy; 2026 <a href="https://bootsagentai.com">Boots On The Ground AI</a> &mdash; AI Solutions for Small Business Owners</p>
+</footer>
+
+</body>
+</html>
