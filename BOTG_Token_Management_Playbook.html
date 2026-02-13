@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Token Management Playbook — Boots On The Ground AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #243558;
+    --blue: #2E86AB;
+    --gold: #D4A843;
+    --gold-hover: #E0B854;
+    --amber: #F59E0B;
+    --amber-dark: #D97706;
+    --light-bg: #F4F7FA;
+    --white: #FFFFFF;
+    --gray: #6C757D;
+    --dark-text: #1a1a2e;
+    --green: #10B981;
+    --red: #EF4444;
+    --orange: #F97316;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--light-bg);
+    color: var(--dark-text);
+    min-height: 100vh;
+    line-height: 1.7;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, #3D1F00 50%, var(--amber-dark) 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--gold) 0%, var(--amber) 50%, var(--gold) 100%);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3rem 2rem 2.5rem;
+    text-align: center;
+  }
+
+  .header-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+  }
+
+  .header-inner h1 {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-inner h1 span { color: var(--gold); }
+
+  .header-sub {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    font-weight: 500;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .header-meta-item {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 8px;
+    padding: 0.4rem 1rem;
+    color: var(--gold);
+    font-size: 0.8rem;
+    font-weight: 600;
+  }
+
+  /* ===== BACK LINK ===== */
+  .back-link {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.25rem 2rem 0;
+  }
+
+  .back-link a {
+    color: var(--blue);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: color 0.2s;
+  }
+
+  .back-link a:hover { color: var(--gold); }
+
+  /* ===== TABLE OF CONTENTS ===== */
+  .toc {
+    max-width: 900px;
+    margin: 1.5rem auto;
+    padding: 0 2rem;
+  }
+
+  .toc-box {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 1.75rem 2rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border-left: 4px solid var(--gold);
+  }
+
+  .toc-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--gray);
+    margin-bottom: 1rem;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .toc-list a {
+    color: var(--navy);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    transition: color 0.2s;
+  }
+
+  .toc-list a:hover { color: var(--blue); }
+
+  .toc-num {
+    background: var(--navy);
+    color: var(--gold);
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  /* ===== CONTENT ===== */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1rem 2rem 3rem;
+  }
+
+  .section {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 2rem 2.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  }
+
+  .section-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--navy);
+    color: var(--gold);
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+  }
+
+  .section h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .section h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 1.5rem 0 0.75rem;
+  }
+
+  .section p {
+    margin-bottom: 1rem;
+    color: #374151;
+    font-size: 0.95rem;
+  }
+
+  .section ul, .section ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+
+  .section li {
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+  /* ===== CALLOUT BOXES ===== */
+  .callout {
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.25rem 0;
+    font-size: 0.9rem;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .callout-warn {
+    background: #FEF3C7;
+    border-left: 4px solid var(--amber);
+  }
+  .callout-warn .callout-title { color: var(--amber-dark); }
+
+  .callout-danger {
+    background: #FEE2E2;
+    border-left: 4px solid var(--red);
+  }
+  .callout-danger .callout-title { color: var(--red); }
+
+  .callout-tip {
+    background: #ECFDF5;
+    border-left: 4px solid var(--green);
+  }
+  .callout-tip .callout-title { color: #059669; }
+
+  .callout-info {
+    background: #EFF6FF;
+    border-left: 4px solid var(--blue);
+  }
+  .callout-info .callout-title { color: var(--blue); }
+
+  /* ===== COMPARISON TABLE ===== */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .compare-table th {
+    background: var(--navy);
+    color: var(--gold);
+    font-weight: 700;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .compare-table td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    color: #374151;
+  }
+
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:nth-child(even) td { background: #FAFBFC; }
+
+  /* ===== CODE BLOCKS ===== */
+  .code-block {
+    background: #1E293B;
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    color: #E2E8F0;
+    line-height: 1.7;
+  }
+
+  .code-block .comment { color: #64748B; }
+  .code-block .highlight { color: var(--gold); font-weight: 600; }
+  .code-block .green { color: #4ADE80; }
+  .code-block .red { color: #F87171; }
+
+  /* ===== VISUAL DIAGRAM ===== */
+  .diagram {
+    background: #F8FAFC;
+    border: 2px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.25rem 0;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.8;
+    color: var(--navy);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* ===== GOLDEN RULES ===== */
+  .golden-rules {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
+    border-radius: 16px;
+    padding: 2.5rem;
+    margin: 2rem 0;
+  }
+
+  .golden-rules h2 {
+    color: var(--gold);
+    font-size: 1.4rem;
+    font-weight: 900;
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .golden-rule {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    border: 1px solid rgba(212,168,67,0.15);
+  }
+
+  .golden-rule-num {
+    background: var(--gold);
+    color: var(--navy);
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .golden-rule-text {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .golden-rule-text strong { color: var(--gold); }
+
+  /* ===== COST VISUAL ===== */
+  .cost-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.4rem 0;
+  }
+
+  .cost-bar-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--navy);
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .cost-bar-track {
+    flex: 1;
+    height: 22px;
+    background: #E5E7EB;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+
+  .cost-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: white;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--navy);
+    padding: 1.5rem 2rem;
+    text-align: center;
+  }
+
+  .footer p {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.8rem;
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 640px) {
+    .header-inner h1 { font-size: 1.6rem; }
+    .section { padding: 1.5rem; }
+    .toc-list { grid-template-columns: 1fr; }
+    .golden-rules { padding: 1.5rem; }
+    .compare-table { font-size: 0.78rem; }
+    .cost-bar-label { width: 100px; font-size: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-icon">&#129689;</div>
+    <h1>TOKEN <span>MANAGEMENT</span> PLAYBOOK</h1>
+    <p class="header-sub">
+      Understanding tokens, costs, caching, and limits across LLMs.
+      Built for the people building with AI who want to stop bleeding money they didn't know they were spending.
+    </p>
+    <div class="header-meta">
+      <div class="header-meta-item">16 Sections</div>
+      <div class="header-meta-item">10 Golden Rules</div>
+      <div class="header-meta-item">Feb 2026</div>
+      <div class="header-meta-item">Boots Approved</div>
+    </div>
+  </div>
+</header>
+
+<!-- BACK LINK -->
+<div class="back-link">
+  <a href="index.html">&#8592; Back to Playbook Hub</a>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <div class="toc-box">
+    <div class="toc-title">Table of Contents</div>
+    <ul class="toc-list">
+      <li><a href="#s1"><span class="toc-num">1</span> What Is a Token?</a></li>
+      <li><a href="#s2"><span class="toc-num">2</span> Tokens = Money</a></li>
+      <li><a href="#s3"><span class="toc-num">3</span> Input vs Output Tokens</a></li>
+      <li><a href="#s4"><span class="toc-num">4</span> The Context Window</a></li>
+      <li><a href="#s5"><span class="toc-num">5</span> Long Conversations: The Hidden Costs</a></li>
+      <li><a href="#s6"><span class="toc-num">6</span> Model Selection & Pricing</a></li>
+      <li><a href="#s7"><span class="toc-num">7</span> System Prompts: Silent Token Eaters</a></li>
+      <li><a href="#s8"><span class="toc-num">8</span> Caching: Stop Paying Twice</a></li>
+      <li><a href="#s9"><span class="toc-num">9</span> Setting Limits & Budgets</a></li>
+      <li><a href="#s10"><span class="toc-num">10</span> Images, Files & Hidden Token Costs</a></li>
+      <li><a href="#s11"><span class="toc-num">11</span> Streaming vs Batch</a></li>
+      <li><a href="#s12"><span class="toc-num">12</span> The Gotchas Nobody Tells You</a></li>
+      <li><a href="#s13"><span class="toc-num">13</span> Token Counting Tools</a></li>
+      <li><a href="#s14"><span class="toc-num">14</span> Cost Estimation Cheat Sheet</a></li>
+      <li><a href="#s15"><span class="toc-num">15</span> Provider Comparison</a></li>
+      <li><a href="#s16"><span class="toc-num">16</span> Real-World Scenarios</a></li>
+    </ul>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- SECTION 1 -->
+  <div class="section" id="s1">
+    <div class="section-num">1</div>
+    <h2>What Is a Token?</h2>
+    <p>A token is a chunk of text that an AI model processes. It's not a character, and it's not a full word. It's somewhere in between.</p>
+    <p>Think of it like this: the AI doesn't read words the way you do. It breaks everything into small pieces called tokens, then processes those pieces.</p>
+
+    <h3>How big is a token?</h3>
+    <ul>
+      <li><strong>1 token</strong> is roughly 3-4 characters of English text</li>
+      <li><strong>1 word</strong> is usually 1-2 tokens</li>
+      <li><strong>100 tokens</strong> is roughly 75 words</li>
+      <li><strong>1,000 tokens</strong> is roughly 750 words (about 1.5 pages)</li>
+    </ul>
+
+    <div class="code-block">
+<span class="comment">// How the AI sees your text:</span>
+
+"Hello, how are you today?"
+
+<span class="highlight">Token 1:</span> "Hello"
+<span class="highlight">Token 2:</span> ","
+<span class="highlight">Token 3:</span> " how"
+<span class="highlight">Token 4:</span> " are"
+<span class="highlight">Token 5:</span> " you"
+<span class="highlight">Token 6:</span> " today"
+<span class="highlight">Token 7:</span> "?"
+
+<span class="comment">// 7 words = 7 tokens (simple sentence)</span>
+<span class="comment">// But "uncomfortable" = 3 tokens: "un" + "comfort" + "able"</span>
+    </div>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; Key Insight</div>
+      <p>Simple, common words use fewer tokens. Technical jargon, code, and non-English text use more. The word "API" is 1 token, but "implementation" might be 2-3 tokens.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section" id="s2">
+    <div class="section-num">2</div>
+    <h2>Tokens = Money</h2>
+    <p>Every time you send a message to an AI model through an API, you're paying for tokens. Every. Single. Time.</p>
+    <p>AI providers charge per token — usually priced per 1 million tokens (MTok). The formula is dead simple:</p>
+
+    <div class="diagram">Your Cost = (Input Tokens x Input Price) + (Output Tokens x Output Price)
+
+Example with Claude Sonnet:
+  You send:  2,000 tokens  x  $3.00/MTok  =  $0.006
+  AI replies: 1,000 tokens  x  $15.00/MTok =  $0.015
+                                    ─────────────
+                            Total:    $0.021 per exchange</div>
+
+    <p>That seems tiny. But multiply it:</p>
+
+    <table class="compare-table">
+      <tr><th>Scenario</th><th>Exchanges/Day</th><th>Daily Cost</th><th>Monthly Cost</th></tr>
+      <tr><td>Light personal use</td><td>50</td><td>$1.05</td><td>$31.50</td></tr>
+      <tr><td>Dev team (5 people)</td><td>500</td><td>$10.50</td><td>$315</td></tr>
+      <tr><td>Customer-facing chatbot</td><td>5,000</td><td>$105</td><td>$3,150</td></tr>
+      <tr><td>Heavy production app</td><td>50,000</td><td>$1,050</td><td>$31,500</td></tr>
+    </table>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; Wake-Up Call</div>
+      <p>A single poorly-designed AI chatbot can burn through $1,000+ per month without you realizing it. Most people don't check their API usage until they get the bill.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section" id="s3">
+    <div class="section-num">3</div>
+    <h2>Input vs Output Tokens</h2>
+    <p>This is a detail most people miss: <strong>input tokens and output tokens are priced differently.</strong></p>
+    <ul>
+      <li><strong>Input tokens</strong> = what YOU send to the AI (your question, context, system prompt, conversation history)</li>
+      <li><strong>Output tokens</strong> = what the AI sends BACK to you (the response)</li>
+    </ul>
+    <p>Output tokens almost always cost <strong>3-5x more</strong> than input tokens.</p>
+
+    <table class="compare-table">
+      <tr><th>Model</th><th>Input Price (per MTok)</th><th>Output Price (per MTok)</th><th>Output Multiplier</th></tr>
+      <tr><td>GPT-4o</td><td>$2.50</td><td>$10.00</td><td>4x more</td></tr>
+      <tr><td>Claude Sonnet 4.5</td><td>$3.00</td><td>$15.00</td><td>5x more</td></tr>
+      <tr><td>Claude Opus 4</td><td>$15.00</td><td>$75.00</td><td>5x more</td></tr>
+      <tr><td>Claude Haiku 3.5</td><td>$0.80</td><td>$4.00</td><td>5x more</td></tr>
+      <tr><td>GPT-4o mini</td><td>$0.15</td><td>$0.60</td><td>4x more</td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>If your AI is writing long, verbose responses and you only need a short answer — you're overpaying on output tokens. Tell the model to be concise. A simple instruction like "Answer in 2-3 sentences" can cut your output costs by 80%.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 4 -->
+  <div class="section" id="s4">
+    <div class="section-num">4</div>
+    <h2>The Context Window</h2>
+    <p>The <strong>context window</strong> is the total amount of text (in tokens) that a model can "see" at one time. Think of it as the AI's working memory.</p>
+
+    <table class="compare-table">
+      <tr><th>Model</th><th>Context Window</th><th>Roughly Equivalent To</th></tr>
+      <tr><td>GPT-4o</td><td>128K tokens</td><td>~200 pages / a short novel</td></tr>
+      <tr><td>Claude Sonnet 4.5</td><td>200K tokens</td><td>~300 pages / a full novel</td></tr>
+      <tr><td>Gemini 1.5 Pro</td><td>2M tokens</td><td>~3,000 pages / several textbooks</td></tr>
+    </table>
+
+    <h3>What happens when you hit the limit?</h3>
+    <p>The AI doesn't crash — it just starts <strong>forgetting the oldest parts of the conversation</strong>. This is called "falling out of context." The AI silently drops your earlier messages to make room for new ones.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">&#9888;&#65039; Warning</div>
+      <p>A 200K context window doesn't mean you should USE all 200K tokens. A bigger context means a bigger bill. If you stuff 100K tokens of context into every request, you're paying for 100K input tokens every single time you send a message.</p>
+    </div>
+
+    <p><strong>The trap:</strong> Just because a model CAN handle 200K tokens doesn't mean it SHOULD. Performance degrades on very long contexts. The model may "lose focus" on important details buried in the middle of a massive context.</p>
+  </div>
+
+  <!-- SECTION 5 -->
+  <div class="section" id="s5">
+    <div class="section-num">5</div>
+    <h2>Long Conversations: The Hidden Cost</h2>
+    <p>This is the single biggest gotcha for most people. Here's what actually happens in a conversation with an AI:</p>
+
+    <div class="diagram">Message 1: You send 100 tokens  ──>  AI reads 100 tokens
+Message 2: You send 100 tokens  ──>  AI reads 300 tokens (msg 1 + reply + msg 2)
+Message 3: You send 100 tokens  ──>  AI reads 600 tokens (all history + msg 3)
+Message 4: You send 100 tokens  ──>  AI reads 1,000 tokens (all history + msg 4)
+   ...
+Message 20: You send 100 tokens ──>  AI reads 10,000+ tokens (ENTIRE conversation)</div>
+
+    <p><strong>Every message re-sends the ENTIRE conversation history.</strong> The AI doesn't "remember" — it re-reads everything from scratch each time.</p>
+
+    <h3>The snowball effect</h3>
+    <p>A 20-message conversation doesn't cost 20x a single message. It costs closer to <strong>200x</strong> because each message includes all previous messages as input.</p>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; The #1 Money Pit</div>
+      <p>A single long conversation with a powerful model can easily cost $1-5+ in tokens. If you have users running long conversations with your AI product, this adds up to thousands per month — fast.</p>
+    </div>
+
+    <h3>What to do about it</h3>
+    <ul>
+      <li><strong>Start new conversations</strong> for new topics instead of continuing old ones</li>
+      <li><strong>Summarize and reset</strong> — periodically summarize the conversation and start fresh with the summary</li>
+      <li><strong>Set a conversation length limit</strong> in your apps (e.g., max 20 messages, then suggest starting a new chat)</li>
+      <li><strong>Only include relevant history</strong> — don't send the full conversation if the user's question doesn't need it</li>
+    </ul>
+  </div>
+
+  <!-- SECTION 6 -->
+  <div class="section" id="s6">
+    <div class="section-num">6</div>
+    <h2>Model Selection & Pricing</h2>
+    <p>Not every task needs the most powerful (and expensive) model. Choosing the right model for the job is the easiest way to cut costs.</p>
+
+    <h3>The model hierarchy</h3>
+    <div class="cost-bar">
+      <div class="cost-bar-label">Haiku / Mini</div>
+      <div class="cost-bar-track"><div class="cost-bar-fill" style="width:8%;background:var(--green);">$</div></div>
+    </div>
+    <div class="cost-bar">
+      <div class="cost-bar-label">Sonnet / GPT-4o</div>
+      <div class="cost-bar-track"><div class="cost-bar-fill" style="width:35%;background:var(--amber);">$$</div></div>
+    </div>
+    <div class="cost-bar">
+      <div class="cost-bar-label">Opus / o1</div>
+      <div class="cost-bar-track"><div class="cost-bar-fill" style="width:100%;background:var(--red);">$$$$$</div></div>
+    </div>
+
+    <h3>When to use what</h3>
+    <table class="compare-table">
+      <tr><th>Task</th><th>Best Model Tier</th><th>Why</th></tr>
+      <tr><td>Classify text, extract data, simple Q&A</td><td>Haiku / Mini</td><td>Fast, cheap, good enough</td></tr>
+      <tr><td>Write content, code, analysis</td><td>Sonnet / GPT-4o</td><td>Great quality, reasonable cost</td></tr>
+      <tr><td>Complex reasoning, architecture, research</td><td>Opus / o1</td><td>Best quality, premium cost</td></tr>
+      <tr><td>Summarize text, format data</td><td>Haiku / Mini</td><td>Don't overpay for simple tasks</td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p><strong>Route by task complexity.</strong> In production apps, use a small model to classify the request first, then route complex requests to a powerful model and simple ones to a cheap model. This alone can cut costs 50-70%.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7 -->
+  <div class="section" id="s7">
+    <div class="section-num">7</div>
+    <h2>System Prompts: The Silent Token Eaters</h2>
+    <p>A <strong>system prompt</strong> is the hidden instruction you give the AI before the user ever types anything. Things like "You are a helpful customer service agent for Acme Corp..."</p>
+    <p>Here's the problem: <strong>the system prompt is sent with EVERY single message.</strong></p>
+
+    <div class="diagram">Every API call includes:
+┌─────────────────────────────────┐
+│  System Prompt  (500 tokens)    │  ← Sent EVERY time
+│  Conversation History (varies)  │  ← Growing EVERY time
+│  User's New Message (100 tokens)│  ← The actual question
+└─────────────────────────────────┘
+
+If your system prompt is 2,000 tokens and a user sends 50 messages:
+  System prompt alone = 2,000 x 50 = 100,000 tokens
+  That's $0.30 just for the system prompt (Sonnet pricing)</div>
+
+    <h3>How to fix it</h3>
+    <ul>
+      <li><strong>Keep system prompts short.</strong> Every word counts — literally. Cut the fluff.</li>
+      <li><strong>Use caching</strong> (see next section) to avoid re-processing the same system prompt</li>
+      <li><strong>Don't put examples in the system prompt</strong> unless absolutely necessary — they're expensive to repeat</li>
+      <li><strong>Move static instructions to cached context</strong> instead of the system prompt</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">&#9888;&#65039; Common Mistake</div>
+      <p>Pasting your entire company FAQ, product docs, or lengthy persona description into the system prompt. A 5,000-token system prompt costs you $0.015 per message just for the prompt itself — before the user even says anything.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 8 -->
+  <div class="section" id="s8">
+    <div class="section-num">8</div>
+    <h2>Caching: Stop Paying Twice</h2>
+    <p>Prompt caching is one of the most powerful cost-saving features available. The concept is simple: <strong>if you're sending the same content repeatedly, cache it so you only pay full price once.</strong></p>
+
+    <h3>How prompt caching works</h3>
+    <div class="diagram">Without Caching:
+  Request 1: [System Prompt + Context] → Full price
+  Request 2: [System Prompt + Context] → Full price (again!)
+  Request 3: [System Prompt + Context] → Full price (again!!)
+
+With Caching:
+  Request 1: [System Prompt + Context] → Full price (cached)
+  Request 2: [Cached ✓] + new message  → 90% discount on cached part
+  Request 3: [Cached ✓] + new message  → 90% discount on cached part</div>
+
+    <h3>Caching savings by provider</h3>
+    <table class="compare-table">
+      <tr><th>Provider</th><th>Cache Write Cost</th><th>Cache Read Cost</th><th>Savings</th></tr>
+      <tr><td>Anthropic (Claude)</td><td>1.25x base price (once)</td><td>0.1x base price</td><td>90% on reads</td></tr>
+      <tr><td>OpenAI (GPT)</td><td>Free (automatic)</td><td>0.5x base price</td><td>50% on reads</td></tr>
+      <tr><td>Google (Gemini)</td><td>Free</td><td>0.25x base price</td><td>75% on reads</td></tr>
+    </table>
+
+    <h3>What should you cache?</h3>
+    <ul>
+      <li><strong>System prompts</strong> — sent with every request, perfect for caching</li>
+      <li><strong>Long documents</strong> — if users are asking questions about the same document</li>
+      <li><strong>Few-shot examples</strong> — the examples you include to show the AI what you want</li>
+      <li><strong>Conversation history prefix</strong> — the earlier parts of a conversation that don't change</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Real Savings Example</div>
+      <p>A customer support bot with a 3,000-token system prompt handling 1,000 messages/day:<br>
+      <strong>Without caching:</strong> $9.00/day in system prompt costs alone<br>
+      <strong>With caching:</strong> $0.90/day — saving $243/month from one simple change.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 9 -->
+  <div class="section" id="s9">
+    <div class="section-num">9</div>
+    <h2>Setting Limits & Budgets</h2>
+    <p>Every AI provider gives you tools to set spending limits. <strong>Use them.</strong> An uncapped API key is a ticking time bomb.</p>
+
+    <h3>Limits you should set immediately</h3>
+    <table class="compare-table">
+      <tr><th>Limit Type</th><th>What It Does</th><th>Where to Set It</th></tr>
+      <tr><td>Monthly budget cap</td><td>Hard stop when you hit $X/month</td><td>Provider dashboard</td></tr>
+      <tr><td>Rate limit</td><td>Max requests per minute/hour</td><td>Provider dashboard or your code</td></tr>
+      <tr><td>Max tokens per request</td><td>Limit how long the AI's response can be</td><td>API parameter: max_tokens</td></tr>
+      <tr><td>Max conversation length</td><td>Cap how many messages before reset</td><td>Your application code</td></tr>
+      <tr><td>Per-user daily limit</td><td>Prevent one user from burning your budget</td><td>Your application code</td></tr>
+      <tr><td>Alert thresholds</td><td>Email you when spending hits 50%, 80%</td><td>Provider dashboard</td></tr>
+    </table>
+
+    <div class="code-block">
+<span class="comment">// Example: Setting max_tokens in an API call</span>
+<span class="comment">// This limits the AI's response length</span>
+
+const response = await anthropic.messages.create({
+  model: "claude-sonnet-4-5-20250929",
+  max_tokens: <span class="highlight">500</span>,  <span class="comment">// AI can only respond with 500 tokens max</span>
+  messages: [{ role: "user", content: userMessage }]
+});
+
+<span class="comment">// Without max_tokens, the AI might write 4,000 tokens when you only needed 200</span>
+<span class="comment">// That's 8x the output cost — for nothing</span>
+    </div>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; Horror Story</div>
+      <p>A developer left an API key in a public repo. A bot found it and ran thousands of requests. The bill: <strong>$14,000 in one weekend.</strong> Always set budget caps, always rotate exposed keys, and always monitor usage.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 10 -->
+  <div class="section" id="s10">
+    <div class="section-num">10</div>
+    <h2>Images, Files & Hidden Token Costs</h2>
+    <p>Text isn't the only thing that costs tokens. Many people are shocked by how many tokens images and files consume.</p>
+
+    <h3>Image token costs</h3>
+    <table class="compare-table">
+      <tr><th>Image Size</th><th>Approximate Tokens</th><th>Cost (Sonnet)</th></tr>
+      <tr><td>Small thumbnail (100x100)</td><td>~200 tokens</td><td>$0.0006</td></tr>
+      <tr><td>Medium image (500x500)</td><td>~1,000 tokens</td><td>$0.003</td></tr>
+      <tr><td>Large image (1000x1000)</td><td>~1,600 tokens</td><td>$0.005</td></tr>
+      <tr><td>High-res photo (2000x2000)</td><td>~3,200+ tokens</td><td>$0.01+</td></tr>
+      <tr><td>Screenshot (1920x1080)</td><td>~2,500 tokens</td><td>$0.008</td></tr>
+    </table>
+
+    <h3>Other hidden token costs</h3>
+    <ul>
+      <li><strong>PDF files:</strong> Converted to text, can be thousands of tokens per page</li>
+      <li><strong>Code files:</strong> Code is token-heavy because of syntax, indentation, and special characters</li>
+      <li><strong>JSON/XML:</strong> All those brackets, keys, and formatting? Tokens. A 1KB JSON blob can be 300+ tokens</li>
+      <li><strong>Tool/function definitions:</strong> If you're using tool use or function calling, those schemas are sent as tokens every time</li>
+    </ul>
+
+    <div class="callout callout-warn">
+      <div class="callout-title">&#9888;&#65039; Watch Out</div>
+      <p>Sending 5 screenshots in one message could cost 12,000+ input tokens — that's more than a whole page of text. Resize images before sending them to the AI, or describe what's in the image instead.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 11 -->
+  <div class="section" id="s11">
+    <div class="section-num">11</div>
+    <h2>Streaming vs Batch</h2>
+
+    <h3>Streaming</h3>
+    <p>Streaming shows the AI's response word-by-word as it's generated (like how ChatGPT types in real time). <strong>Streaming costs the same in tokens</strong> — it doesn't save money. But it feels faster to users because they see output immediately.</p>
+
+    <h3>Batch processing</h3>
+    <p>If you have hundreds or thousands of requests that don't need instant answers, <strong>batch APIs offer 50% discounts.</strong></p>
+
+    <table class="compare-table">
+      <tr><th>Use Case</th><th>Best Approach</th><th>Why</th></tr>
+      <tr><td>Live chatbot</td><td>Streaming</td><td>Users need instant responses</td></tr>
+      <tr><td>Processing 1,000 documents</td><td>Batch</td><td>50% cost savings, no rush</td></tr>
+      <tr><td>Nightly report generation</td><td>Batch</td><td>Save money, run overnight</td></tr>
+      <tr><td>Interactive code assistant</td><td>Streaming</td><td>Developers want real-time output</td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>Anthropic's Batch API gives you 50% off and processes within 24 hours. If your workload can wait, this is free money.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 12 -->
+  <div class="section" id="s12">
+    <div class="section-num">12</div>
+    <h2>The Gotchas Nobody Tells You</h2>
+    <p>These are the things that catch people off guard. Bookmark this section.</p>
+
+    <h3>1. Retries multiply your cost</h3>
+    <p>If your code automatically retries failed requests, you're paying for every attempt. Three retries = 3x the cost for one answer. Always implement exponential backoff and set a retry limit.</p>
+
+    <h3>2. "Temperature" doesn't affect cost, but it affects waste</h3>
+    <p>Higher temperature = more creative but sometimes nonsensical responses. If the AI gives a bad answer and the user has to ask again, you just paid double.</p>
+
+    <h3>3. Empty or error responses still cost tokens</h3>
+    <p>If the AI returns an error or a useless response, you still paid for the input tokens. Validate inputs before sending them.</p>
+
+    <h3>4. Thinking tokens (extended thinking / chain-of-thought)</h3>
+    <p>Some models now support "thinking" or "reasoning" modes where the AI works through a problem step by step. <strong>Those thinking tokens count as output tokens</strong> — the most expensive kind. A model "thinking" for 5,000 tokens before giving a 200-token answer means you're paying for 5,200 output tokens.</p>
+
+    <h3>5. Conversation forking multiplies costs</h3>
+    <p>If a user edits an earlier message (like in ChatGPT or Claude), the AI re-processes everything from that point forward. That's a whole new conversation branch, paid in full.</p>
+
+    <h3>6. Tool use / function calling adds tokens</h3>
+    <p>Every tool definition you give the AI is sent as tokens. 10 tools with complex schemas can add 2,000-5,000 tokens to every request — before the user even says anything.</p>
+
+    <h3>7. The "helpful" AI problem</h3>
+    <p>AI models love to be thorough. Ask a yes/no question, get a 500-word essay. That's 500 output tokens you didn't need. Be specific in your prompts: "Answer with only yes or no."</p>
+
+    <div class="callout callout-danger">
+      <div class="callout-title">&#128680; The Biggest Gotcha</div>
+      <p><strong>You can't un-send tokens.</strong> Once the API call is made, you're charged — even if you cancel the stream mid-response, even if the answer is wrong, even if your app crashes before showing it to the user. Design defensively.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 13 -->
+  <div class="section" id="s13">
+    <div class="section-num">13</div>
+    <h2>Token Counting Tools</h2>
+    <p>You don't have to guess how many tokens something is. Use these tools:</p>
+
+    <table class="compare-table">
+      <tr><th>Tool</th><th>Works With</th><th>Type</th></tr>
+      <tr><td>Anthropic Token Counter (API)</td><td>Claude models</td><td>API endpoint</td></tr>
+      <tr><td>OpenAI Tokenizer (tiktoken)</td><td>GPT models</td><td>Python library / web tool</td></tr>
+      <tr><td>Anthropic Console</td><td>Claude</td><td>Usage dashboard</td></tr>
+      <tr><td>OpenAI Usage Dashboard</td><td>GPT models</td><td>Web dashboard</td></tr>
+      <tr><td>LLM Price Check (llm-price.com)</td><td>All models</td><td>Price comparison website</td></tr>
+    </table>
+
+    <div class="callout callout-tip">
+      <div class="callout-title">&#9989; Pro Tip</div>
+      <p>Check your provider's usage dashboard weekly. Set up email alerts at 50% and 80% of your budget. Surprises are expensive in the token world.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 14 -->
+  <div class="section" id="s14">
+    <div class="section-num">14</div>
+    <h2>Cost Estimation Cheat Sheet</h2>
+    <p>Quick reference for estimating costs before you build:</p>
+
+    <table class="compare-table">
+      <tr><th>Content Type</th><th>Approx. Tokens</th><th>Real-World Example</th></tr>
+      <tr><td>A tweet (280 chars)</td><td>~50 tokens</td><td>Quick classification or sentiment</td></tr>
+      <tr><td>A paragraph</td><td>~100-150 tokens</td><td>Summary request</td></tr>
+      <tr><td>An email</td><td>~200-500 tokens</td><td>Draft or reply generation</td></tr>
+      <tr><td>A full page of text</td><td>~500-700 tokens</td><td>Document analysis</td></tr>
+      <tr><td>A blog post</td><td>~1,000-3,000 tokens</td><td>Content generation</td></tr>
+      <tr><td>A code file (200 lines)</td><td>~1,500-2,500 tokens</td><td>Code review or debugging</td></tr>
+      <tr><td>A 10-page PDF</td><td>~5,000-7,000 tokens</td><td>Document Q&A</td></tr>
+      <tr><td>A book chapter</td><td>~10,000-15,000 tokens</td><td>Long-form analysis</td></tr>
+    </table>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; Quick Math</div>
+      <p><strong>Rule of thumb:</strong> Take your word count, multiply by 1.3, and you have a rough token estimate. For code, multiply by 1.5-2x because of syntax characters.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 15 -->
+  <div class="section" id="s15">
+    <div class="section-num">15</div>
+    <h2>Provider Comparison</h2>
+    <p>Each provider does things slightly differently. Here's what matters:</p>
+
+    <table class="compare-table">
+      <tr><th>Feature</th><th>Anthropic (Claude)</th><th>OpenAI (GPT)</th><th>Google (Gemini)</th></tr>
+      <tr><td>Top model context</td><td>200K tokens</td><td>128K tokens</td><td>2M tokens</td></tr>
+      <tr><td>Prompt caching</td><td>90% savings</td><td>50% savings</td><td>75% savings</td></tr>
+      <tr><td>Batch discount</td><td>50% off</td><td>50% off</td><td>Varies</td></tr>
+      <tr><td>Budget caps</td><td>Yes (dashboard)</td><td>Yes (dashboard)</td><td>Yes (dashboard)</td></tr>
+      <tr><td>Free tier</td><td>Limited</td><td>Limited</td><td>Generous</td></tr>
+      <tr><td>Cheapest model</td><td>Haiku ($0.80/MTok in)</td><td>GPT-4o mini ($0.15/MTok in)</td><td>Flash ($0.075/MTok in)</td></tr>
+    </table>
+
+    <div class="callout callout-info">
+      <div class="callout-title">&#128161; Key Takeaway</div>
+      <p>No single provider is cheapest for everything. Google Gemini has the largest context window and cheapest small models. Anthropic has the best caching savings. OpenAI has the broadest ecosystem. Pick based on your specific use case.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 16 -->
+  <div class="section" id="s16">
+    <div class="section-num">16</div>
+    <h2>Real-World Scenarios</h2>
+
+    <h3>Scenario 1: "I just want to build a chatbot for my small business"</h3>
+    <p>You build a customer support chatbot. 50 customers/day, average 8 messages each.</p>
+    <div class="code-block">
+<span class="comment">// The math</span>
+System prompt:                <span class="highlight">1,000 tokens</span>
+Average conversation length:  <span class="highlight">8 messages</span>
+Average tokens per exchange:  <span class="highlight">~2,000 tokens</span> (input + output, growing)
+Total per conversation:       <span class="highlight">~12,000 tokens</span>
+Daily (50 conversations):     <span class="highlight">600,000 tokens</span>
+Monthly:                      <span class="highlight">~18M tokens</span>
+
+<span class="comment">// Cost with Claude Sonnet (blended rate ~$6/MTok)</span>
+Monthly cost: <span class="red">~$108/month</span>
+
+<span class="comment">// With caching + Haiku for simple questions (70% of traffic)</span>
+Monthly cost: <span class="green">~$25/month</span>  ← Smart routing saves $83/month
+    </div>
+
+    <h3>Scenario 2: "I'm using AI to process my company's documents"</h3>
+    <p>You upload 500 documents (average 5 pages each) for analysis.</p>
+    <div class="code-block">
+<span class="comment">// The math</span>
+500 documents x 5 pages x 700 tokens/page = <span class="highlight">1,750,000 input tokens</span>
+Analysis output per doc (~500 tokens):       <span class="highlight">250,000 output tokens</span>
+
+<span class="comment">// Cost with Claude Sonnet</span>
+Input:  1.75M x $3/MTok  = $5.25
+Output: 0.25M x $15/MTok = $3.75
+Total: <span class="red">$9.00</span>
+
+<span class="comment">// With Batch API (50% off)</span>
+Total: <span class="green">$4.50</span>
+
+<span class="comment">// With Haiku instead (if quality is sufficient)</span>
+Total: <span class="green">$1.40</span>
+    </div>
+
+    <h3>Scenario 3: "My dev team uses AI coding assistants all day"</h3>
+    <p>5 developers, each making ~100 AI requests per day with code context.</p>
+    <div class="code-block">
+<span class="comment">// The math</span>
+Average request: <span class="highlight">3,000 tokens input + 1,500 tokens output</span>
+Per developer per day: 100 requests
+Team daily tokens: <span class="highlight">2.25M tokens</span>
+Team monthly tokens: <span class="highlight">~67.5M tokens</span>
+
+<span class="comment">// Cost with Claude Sonnet</span>
+Input:  45M x $3/MTok   = $135
+Output: 22.5M x $15/MTok = $337
+Monthly: <span class="red">$472/month</span>
+
+<span class="comment">// With prompt caching (system prompt + common context)</span>
+Monthly: <span class="green">~$280/month</span>  ← Caching saves ~$190/month
+    </div>
+  </div>
+
+  <!-- GOLDEN RULES -->
+  <div class="golden-rules" id="golden-rules">
+    <h2>&#127942; 10 Golden Rules of Token Management</h2>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">1</div>
+      <div class="golden-rule-text"><strong>Set budget caps on day one.</strong> Every provider lets you set spending limits. Do it before you write a single line of code. An uncapped API key is an unlimited credit card left on a park bench.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">2</div>
+      <div class="golden-rule-text"><strong>Long conversations are expensive conversations.</strong> Every message re-sends the entire history. Start new conversations for new topics. Summarize and reset when conversations get long.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">3</div>
+      <div class="golden-rule-text"><strong>Use the smallest model that gets the job done.</strong> Don't use Opus/GPT-4 for tasks that Haiku/GPT-4o-mini handles fine. Route by complexity — simple tasks to cheap models, hard tasks to powerful ones.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">4</div>
+      <div class="golden-rule-text"><strong>Cache everything you repeat.</strong> System prompts, document context, examples — if it's sent more than once, cache it. This alone can cut costs 50-90%.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">5</div>
+      <div class="golden-rule-text"><strong>Output tokens cost 3-5x more than input.</strong> Tell the AI to be concise. Set max_tokens on every request. A shorter response isn't just faster — it's cheaper.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">6</div>
+      <div class="golden-rule-text"><strong>Keep system prompts lean.</strong> Every token in your system prompt is charged on every single message. Cut the fluff. Be precise. Your wallet will thank you.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">7</div>
+      <div class="golden-rule-text"><strong>Monitor usage weekly, not monthly.</strong> Check your provider dashboard every week. Set alerts at 50% and 80% of budget. Catching a runaway cost on day 7 is better than finding out on day 30.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">8</div>
+      <div class="golden-rule-text"><strong>Images and files are token-heavy.</strong> A single screenshot can cost more tokens than a full page of text. Resize images, extract text when possible, and only send what's needed.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">9</div>
+      <div class="golden-rule-text"><strong>Use batch processing for non-urgent work.</strong> If it can wait hours instead of seconds, use the Batch API for 50% savings. Nightly reports, document processing, data analysis — batch it all.</div>
+    </div>
+
+    <div class="golden-rule">
+      <div class="golden-rule-num">10</div>
+      <div class="golden-rule-text"><strong>Tokens sent are tokens paid — no refunds.</strong> Cancelled streams, failed requests, bad prompts — you pay for all of it. Validate inputs, test prompts thoroughly, and design for efficiency from the start.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <p>&copy; 2026 <a href="https://bootsagentai.com">Boots On The Ground AI</a> &mdash; AI Solutions for Small Business Owners</p>
+</footer>
+
+</body>
+</html>
