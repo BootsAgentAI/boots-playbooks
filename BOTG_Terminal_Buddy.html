@@ -648,6 +648,48 @@
     background: var(--gold-hover);
   }
 
+  .modal-btn.danger {
+    background: var(--danger);
+    color: var(--white);
+    border-color: var(--danger);
+  }
+
+  .modal-btn.danger:hover {
+    background: #DC2626;
+  }
+
+  /* ===== NEW TOOL FIELDS ===== */
+  .new-tool-fields {
+    display: none;
+    background: #F8FAFC;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .new-tool-fields.show { display: block; }
+
+  .new-tool-fields .form-group { margin-bottom: 0.75rem; }
+  .new-tool-fields .form-group:last-child { margin-bottom: 0; }
+
+  .new-tool-row {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .new-tool-row .form-group { flex: 1; }
+
+  .color-preview {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    vertical-align: middle;
+    margin-left: 0.5rem;
+    border: 1.5px solid #e2e8f0;
+  }
+
   /* ===== IMPORT MODAL ===== */
   .import-modal { max-width: 700px; }
 
@@ -874,18 +916,25 @@
       <div class="modal-body">
         <div class="form-group">
           <label>Tool</label>
-          <select id="add-tool">
-            <option value="Docker">Docker</option>
-            <option value="Git/GitHub">Git/GitHub</option>
-            <option value="Claude Code">Claude Code</option>
-            <option value="Vercel">Vercel</option>
-            <option value="Supabase">Supabase</option>
-            <option value="Google Cloud Run">Google Cloud Run</option>
-            <option value="Fly.io">Fly.io</option>
-            <option value="Mac/Terminal">Mac/Terminal</option>
-            <option value="npm/Node.js">npm/Node.js</option>
-            <option value="Sentry">Sentry</option>
+          <select id="add-tool" onchange="onToolSelectChange(this)">
+            <!-- Populated dynamically -->
           </select>
+          <div class="new-tool-fields" id="new-tool-fields">
+            <div class="form-group">
+              <label>Tool Name</label>
+              <input type="text" id="new-tool-name" placeholder="e.g. Python, Terraform, AWS CLI" />
+            </div>
+            <div class="new-tool-row">
+              <div class="form-group">
+                <label>Icon (emoji)</label>
+                <input type="text" id="new-tool-icon" placeholder="e.g. &#128013;" maxlength="4" style="font-size:1.2rem;text-align:center;" />
+              </div>
+              <div class="form-group">
+                <label>Color <span class="color-preview" id="new-tool-color-preview" style="background:#6366F1;"></span></label>
+                <input type="color" id="new-tool-color" value="#6366F1" style="height:36px;padding:2px;cursor:pointer;" onchange="document.getElementById('new-tool-color-preview').style.background=this.value" />
+              </div>
+            </div>
+          </div>
         </div>
         <div class="form-group">
           <label>Command</label>
@@ -1090,7 +1139,9 @@ const BUILTIN_COMMANDS = [
 
 // ===== STATE =====
 const STORAGE_KEY = 'boots-terminal-buddy-commands';
+const TOOLS_STORAGE_KEY = 'boots-terminal-buddy-tools';
 let customCommands = [];
+let customTools = {};
 let activeTool = 'All';
 let activeFilter = 'all';
 let searchQuery = '';
@@ -1098,6 +1149,7 @@ let parsedImportCommands = [];
 
 // ===== INIT =====
 function init() {
+  loadCustomTools();
   loadCustomCommands();
   buildSidebar();
   buildMobilePills();
@@ -1106,6 +1158,53 @@ function init() {
   setupSearch();
   setupFilterChips();
   setupDragDrop();
+}
+
+// ===== CUSTOM TOOLS =====
+function loadCustomTools() {
+  try {
+    const stored = localStorage.getItem(TOOLS_STORAGE_KEY);
+    customTools = stored ? JSON.parse(stored) : {};
+  } catch { customTools = {}; }
+  Object.keys(customTools).forEach(name => {
+    if (!TOOL_CONFIG[name]) {
+      TOOL_CONFIG[name] = customTools[name];
+    }
+  });
+}
+
+function saveCustomTools() {
+  localStorage.setItem(TOOLS_STORAGE_KEY, JSON.stringify(customTools));
+}
+
+function getAllToolNames() {
+  return Object.keys(TOOL_CONFIG);
+}
+
+function populateToolDropdown(selectEl, selectedValue) {
+  // Build options using DOM methods to avoid innerHTML XSS
+  selectEl.textContent = '';
+  getAllToolNames().forEach(t => {
+    const opt = document.createElement('option');
+    opt.value = t;
+    opt.textContent = t;
+    if (t === selectedValue) opt.selected = true;
+    selectEl.appendChild(opt);
+  });
+  const newOpt = document.createElement('option');
+  newOpt.value = '__new__';
+  newOpt.textContent = '+ New Tool...';
+  selectEl.appendChild(newOpt);
+}
+
+function onToolSelectChange(select) {
+  const fields = document.getElementById('new-tool-fields');
+  if (select.value === '__new__') {
+    fields.classList.add('show');
+    document.getElementById('new-tool-name').focus();
+  } else {
+    fields.classList.remove('show');
+  }
 }
 
 // ===== LOCAL STORAGE =====
@@ -1135,37 +1234,69 @@ function buildSidebar() {
   tools.forEach(t => { counts[t] = 0; });
   all.forEach(c => { if (counts[c.tool] !== undefined) counts[c.tool]++; });
 
-  let html = '';
-  html += `<div class="sidebar-item ${activeTool === 'All' ? 'active' : ''}" onclick="selectTool('All')">
-    <span class="sidebar-item-icon">&#128203;</span>
-    <span class="sidebar-item-label">All</span>
-    <span class="sidebar-item-count">${all.length}</span>
-  </div>`;
+  const container = document.getElementById('sidebar-list');
+  container.textContent = '';
+
+  // "All" item
+  const allItem = createSidebarItem('All', '&#128203;', all.length, activeTool === 'All');
+  container.appendChild(allItem);
 
   tools.forEach(tool => {
     const cfg = TOOL_CONFIG[tool];
-    html += `<div class="sidebar-item ${activeTool === tool ? 'active' : ''}" onclick="selectTool('${tool}')">
-      <span class="sidebar-item-icon">${cfg.icon}</span>
-      <span class="sidebar-item-label">${tool}</span>
-      <span class="sidebar-item-count">${counts[tool]}</span>
-    </div>`;
+    // Only show tools that have commands
+    if (counts[tool] > 0 || customTools[tool]) {
+      const item = createSidebarItem(tool, cfg.icon, counts[tool], activeTool === tool);
+      container.appendChild(item);
+    }
   });
+}
 
-  document.getElementById('sidebar-list').innerHTML = html;
+function createSidebarItem(tool, iconHTML, count, isActive) {
+  const div = document.createElement('div');
+  div.className = 'sidebar-item' + (isActive ? ' active' : '');
+  div.onclick = () => selectTool(tool);
+
+  const icon = document.createElement('span');
+  icon.className = 'sidebar-item-icon';
+  icon.innerHTML = iconHTML;
+
+  const label = document.createElement('span');
+  label.className = 'sidebar-item-label';
+  label.textContent = tool;
+
+  const countEl = document.createElement('span');
+  countEl.className = 'sidebar-item-count';
+  countEl.textContent = count;
+
+  div.appendChild(icon);
+  div.appendChild(label);
+  div.appendChild(countEl);
+  return div;
 }
 
 // ===== MOBILE PILLS =====
 function buildMobilePills() {
   const all = getAllCommands();
   const tools = Object.keys(TOOL_CONFIG);
+  const container = document.getElementById('mobile-pills');
+  container.textContent = '';
 
-  let html = `<button class="mobile-pill ${activeTool === 'All' ? 'active' : ''}" onclick="selectTool('All')">All (${all.length})</button>`;
+  const allPill = document.createElement('button');
+  allPill.className = 'mobile-pill' + (activeTool === 'All' ? ' active' : '');
+  allPill.textContent = 'All (' + all.length + ')';
+  allPill.onclick = () => selectTool('All');
+  container.appendChild(allPill);
+
   tools.forEach(tool => {
     const count = all.filter(c => c.tool === tool).length;
-    html += `<button class="mobile-pill ${activeTool === tool ? 'active' : ''}" onclick="selectTool('${tool}')">${tool} (${count})</button>`;
+    if (count > 0 || customTools[tool]) {
+      const pill = document.createElement('button');
+      pill.className = 'mobile-pill' + (activeTool === tool ? ' active' : '');
+      pill.textContent = tool + ' (' + count + ')';
+      pill.onclick = () => selectTool(tool);
+      container.appendChild(pill);
+    }
   });
-
-  document.getElementById('mobile-pills').innerHTML = html;
 }
 
 // ===== SELECT TOOL =====
@@ -1306,6 +1437,12 @@ function openAddModal() {
   document.getElementById('add-modal').classList.add('show');
   document.getElementById('add-command').value = '';
   document.getElementById('add-description').value = '';
+  document.getElementById('new-tool-fields').classList.remove('show');
+  document.getElementById('new-tool-name').value = '';
+  document.getElementById('new-tool-icon').value = '';
+  document.getElementById('new-tool-color').value = '#6366F1';
+  document.getElementById('new-tool-color-preview').style.background = '#6366F1';
+  populateToolDropdown(document.getElementById('add-tool'));
 }
 
 function closeAddModal() {
@@ -1313,14 +1450,31 @@ function closeAddModal() {
 }
 
 function saveCommand() {
-  const tool = document.getElementById('add-tool').value;
+  let tool = document.getElementById('add-tool').value;
   const command = document.getElementById('add-command').value.trim();
   const description = document.getElementById('add-description').value.trim();
   const difficulty = document.getElementById('add-difficulty').value;
   const type = document.getElementById('add-type').value;
 
-  if (!command) { showToast('&#9888;', 'Command is required'); return; }
-  if (!description) { showToast('&#9888;', 'Description is required'); return; }
+  // Handle new tool creation
+  if (tool === '__new__') {
+    const toolName = document.getElementById('new-tool-name').value.trim();
+    const toolIcon = document.getElementById('new-tool-icon').value.trim() || '\u{1F4E6}';
+    const toolColor = document.getElementById('new-tool-color').value;
+
+    if (!toolName) { showToast('\u26A0', 'Tool name is required'); return; }
+
+    // Register the new tool
+    const iconHTML = '&#' + toolIcon.codePointAt(0) + ';';
+    TOOL_CONFIG[toolName] = { icon: iconHTML, color: toolColor };
+    customTools[toolName] = { icon: iconHTML, color: toolColor };
+    saveCustomTools();
+    tool = toolName;
+    showToast('\u2728', toolName + ' tool created!');
+  }
+
+  if (!command) { showToast('\u26A0', 'Command is required'); return; }
+  if (!description) { showToast('\u26A0', 'Description is required'); return; }
 
   const newCmd = {
     id: 'custom-' + Date.now(),
@@ -1340,7 +1494,7 @@ function saveCommand() {
   buildMobilePills();
   renderCards();
   updateStats();
-  showToast('&#10003;', 'Command added!');
+  showToast('\u2713', 'Command added!');
 }
 
 // ===== IMPORT =====
@@ -1502,27 +1656,69 @@ function parseMarkdown(text) {
 
 // ===== IMPORT PREVIEW =====
 function showImportPreview(filename, commands) {
-  const toolOptions = Object.keys(TOOL_CONFIG).map(t => `<option value="${t}">${t}</option>`).join('');
+  const preview = document.getElementById('import-preview');
+  preview.textContent = '';
 
-  let tableRows = commands.map((cmd, i) => {
-    const escapedCmd = cmd.command.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    return `<tr>
-      <td><code>${escapedCmd}</code></td>
-      <td style="font-size:0.75rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${cmd.description}">${cmd.description}</td>
-      <td><select id="import-tool-${i}" style="font-size:0.72rem;padding:0.2rem 0.3rem;">${toolOptions.replace(`value="${cmd.tool}"`, `value="${cmd.tool}" selected`)}</select></td>
-    </tr>`;
-  }).join('');
+  // File info
+  const info = document.createElement('div');
+  info.className = 'import-file-info';
+  info.textContent = filename + ' \u2014 ' + commands.length + ' command' + (commands.length !== 1 ? 's' : '') + ' found';
+  preview.appendChild(info);
 
-  document.getElementById('import-preview').innerHTML = `
-    <div class="import-file-info">&#128196; ${filename} &mdash; ${commands.length} command${commands.length !== 1 ? 's' : ''} found</div>
-    <div style="max-height:300px;overflow-y:auto;">
-      <table class="import-preview-table">
-        <thead><tr><th>Command</th><th>Description</th><th>Tool</th></tr></thead>
-        <tbody>${tableRows}</tbody>
-      </table>
-    </div>`;
+  // Scrollable table wrapper
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'max-height:300px;overflow-y:auto;';
 
-  document.getElementById('import-preview').style.display = 'block';
+  const table = document.createElement('table');
+  table.className = 'import-preview-table';
+
+  const thead = document.createElement('thead');
+  const headRow = document.createElement('tr');
+  ['Command', 'Description', 'Tool'].forEach(text => {
+    const th = document.createElement('th');
+    th.textContent = text;
+    headRow.appendChild(th);
+  });
+  thead.appendChild(headRow);
+  table.appendChild(thead);
+
+  const tbody = document.createElement('tbody');
+  commands.forEach((cmd, i) => {
+    const tr = document.createElement('tr');
+
+    const tdCmd = document.createElement('td');
+    const code = document.createElement('code');
+    code.textContent = cmd.command;
+    tdCmd.appendChild(code);
+    tr.appendChild(tdCmd);
+
+    const tdDesc = document.createElement('td');
+    tdDesc.style.cssText = 'font-size:0.75rem;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
+    tdDesc.title = cmd.description;
+    tdDesc.textContent = cmd.description;
+    tr.appendChild(tdDesc);
+
+    const tdTool = document.createElement('td');
+    const select = document.createElement('select');
+    select.id = 'import-tool-' + i;
+    select.style.cssText = 'font-size:0.72rem;padding:0.2rem 0.3rem;';
+    getAllToolNames().forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      if (t === cmd.tool) opt.selected = true;
+      select.appendChild(opt);
+    });
+    tdTool.appendChild(select);
+    tr.appendChild(tdTool);
+
+    tbody.appendChild(tr);
+  });
+  table.appendChild(tbody);
+  wrapper.appendChild(table);
+  preview.appendChild(wrapper);
+
+  preview.style.display = 'block';
   document.getElementById('import-confirm-btn').style.display = 'inline-flex';
 }
 
