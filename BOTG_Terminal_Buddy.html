@@ -517,6 +517,39 @@
     font-weight: 500;
   }
 
+  .card-actions {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .card-action-btn {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    border: 1.5px solid #e2e8f0;
+    background: var(--white);
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    color: var(--gray);
+  }
+
+  .card-action-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+    background: #F0F9FF;
+  }
+
+  .card-action-btn.delete-btn:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: var(--danger-light);
+  }
+
   /* ===== MODAL ===== */
   .modal-overlay {
     display: none;
@@ -1004,6 +1037,51 @@
     </div>
   </div>
 
+  <!-- EDIT COMMAND MODAL -->
+  <div class="modal-overlay" id="edit-cmd-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Command</h2>
+        <button class="modal-close" onclick="closeEditCommandModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="edit-cmd-id" />
+        <div class="form-group">
+          <label>Tool</label>
+          <select id="edit-cmd-tool"></select>
+        </div>
+        <div class="form-group">
+          <label>Command</label>
+          <textarea id="edit-cmd-command" placeholder="docker build -t my-app ."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input type="text" id="edit-cmd-description" placeholder="What does this command do?" />
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <select id="edit-cmd-difficulty">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate">Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Type</label>
+          <select id="edit-cmd-type">
+            <option value="most-used">Most Used</option>
+            <option value="superpower">Superpower</option>
+            <option value="danger-zone">Danger Zone</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn" onclick="closeEditCommandModal()">Cancel</button>
+        <button class="modal-btn primary" onclick="saveEditCommand()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- IMPORT MODAL -->
   <div class="modal-overlay" id="import-modal">
     <div class="modal import-modal">
@@ -1444,38 +1522,107 @@ function renderCards() {
 
   info.textContent = `Showing ${commands.length} command${commands.length !== 1 ? 's' : ''}`;
 
-  grid.innerHTML = commands.map(cmd => {
-    const cfg = TOOL_CONFIG[cmd.tool] || { icon: '&#128196;', color: '#888' };
+  grid.textContent = '';
+  commands.forEach(cmd => {
+    const cfg = TOOL_CONFIG[cmd.tool] || { icon: '\u{1F4C4}', color: '#888' };
     const isDanger = cmd.type === 'danger-zone';
     const isCustom = cmd.source === 'custom';
 
-    let tagHTML = '';
-    if (cmd.type === 'most-used') tagHTML += '<span class="card-tag tag-most-used">Most Used</span>';
-    else if (cmd.type === 'superpower') tagHTML += '<span class="card-tag tag-superpower">Superpower</span>';
-    else if (cmd.type === 'danger-zone') tagHTML += '<span class="card-tag tag-danger-zone">Danger Zone</span>';
+    const card = document.createElement('div');
+    card.className = 'command-card' + (isDanger ? ' danger' : '');
 
-    if (cmd.difficulty === 'beginner') tagHTML += '<span class="card-tag tag-beginner">Beginner</span>';
-    else if (cmd.difficulty === 'intermediate') tagHTML += '<span class="card-tag tag-intermediate">Intermediate</span>';
-    else if (cmd.difficulty === 'advanced') tagHTML += '<span class="card-tag tag-advanced">Advanced</span>';
+    // Top row: tool badge + tags
+    const top = document.createElement('div');
+    top.className = 'card-top';
+    const badge = document.createElement('span');
+    badge.className = 'card-tool-badge';
+    badge.style.background = cfg.color;
+    badge.innerHTML = cfg.icon + ' ';
+    badge.appendChild(document.createTextNode(cmd.tool));
+    top.appendChild(badge);
 
-    if (isCustom) tagHTML += '<span class="card-tag tag-custom">Custom</span>';
+    const badges = document.createElement('div');
+    badges.className = 'card-badges';
+    const tagMap = {
+      'most-used': ['tag-most-used', 'Most Used'],
+      'superpower': ['tag-superpower', 'Superpower'],
+      'danger-zone': ['tag-danger-zone', 'Danger Zone']
+    };
+    const diffMap = {
+      'beginner': ['tag-beginner', 'Beginner'],
+      'intermediate': ['tag-intermediate', 'Intermediate'],
+      'advanced': ['tag-advanced', 'Advanced']
+    };
+    if (tagMap[cmd.type]) {
+      const t = document.createElement('span');
+      t.className = 'card-tag ' + tagMap[cmd.type][0];
+      t.textContent = tagMap[cmd.type][1];
+      badges.appendChild(t);
+    }
+    if (diffMap[cmd.difficulty]) {
+      const d = document.createElement('span');
+      d.className = 'card-tag ' + diffMap[cmd.difficulty][0];
+      d.textContent = diffMap[cmd.difficulty][1];
+      badges.appendChild(d);
+    }
+    if (isCustom) {
+      const c = document.createElement('span');
+      c.className = 'card-tag tag-custom';
+      c.textContent = 'Custom';
+      badges.appendChild(c);
+    }
+    top.appendChild(badges);
+    card.appendChild(top);
 
-    const escapedCmd = cmd.command.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    const cmdForCopy = cmd.command.replace(/"/g, '&quot;');
+    // Description
+    const desc = document.createElement('div');
+    desc.className = 'card-desc';
+    desc.textContent = cmd.description;
+    card.appendChild(desc);
 
-    return `<div class="command-card ${isDanger ? 'danger' : ''}">
-      <div class="card-top">
-        <span class="card-tool-badge" style="background:${cfg.color}">${cfg.icon} ${cmd.tool}</span>
-        <div class="card-badges">${tagHTML}</div>
-      </div>
-      <div class="card-desc">${cmd.description}</div>
-      <div class="card-code-wrapper">
-        <div class="card-code">${escapedCmd}</div>
-        <button class="copy-btn" onclick="copyCommand(this, &quot;${cmdForCopy}&quot;)" title="Copy to clipboard">&#128203;</button>
-      </div>
-      <div class="card-difficulty">${cmd.difficulty.charAt(0).toUpperCase() + cmd.difficulty.slice(1)} level</div>
-    </div>`;
-  }).join('');
+    // Code block
+    const codeWrapper = document.createElement('div');
+    codeWrapper.className = 'card-code-wrapper';
+    const codeEl = document.createElement('div');
+    codeEl.className = 'card-code';
+    codeEl.textContent = cmd.command;
+    codeWrapper.appendChild(codeEl);
+    const copyBtn = document.createElement('button');
+    copyBtn.className = 'copy-btn';
+    copyBtn.title = 'Copy to clipboard';
+    copyBtn.innerHTML = '&#128203;';
+    copyBtn.onclick = function() { copyCommand(this, cmd.command); };
+    codeWrapper.appendChild(copyBtn);
+    card.appendChild(codeWrapper);
+
+    // Difficulty
+    const diff = document.createElement('div');
+    diff.className = 'card-difficulty';
+    diff.textContent = cmd.difficulty.charAt(0).toUpperCase() + cmd.difficulty.slice(1) + ' level';
+    card.appendChild(diff);
+
+    // Edit/Delete for custom commands
+    if (isCustom) {
+      const actions = document.createElement('div');
+      actions.className = 'card-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'card-action-btn';
+      editBtn.textContent = '\u270E Edit';
+      editBtn.onclick = () => openEditCommandModal(cmd.id);
+      actions.appendChild(editBtn);
+
+      const delBtn = document.createElement('button');
+      delBtn.className = 'card-action-btn delete-btn';
+      delBtn.textContent = '\u2715 Delete';
+      delBtn.onclick = () => deleteCommand(cmd.id);
+      actions.appendChild(delBtn);
+
+      card.appendChild(actions);
+    }
+
+    grid.appendChild(card);
+  });
 }
 
 // ===== COPY =====
@@ -1573,6 +1720,65 @@ function saveCommand() {
   renderCards();
   updateStats();
   showToast('\u2713', 'Command added!');
+}
+
+// ===== EDIT COMMAND MODAL =====
+function openEditCommandModal(cmdId) {
+  const cmd = customCommands.find(c => c.id === cmdId);
+  if (!cmd) return;
+
+  document.getElementById('edit-cmd-id').value = cmdId;
+  document.getElementById('edit-cmd-command').value = cmd.command;
+  document.getElementById('edit-cmd-description').value = cmd.description;
+  document.getElementById('edit-cmd-difficulty').value = cmd.difficulty;
+  document.getElementById('edit-cmd-type').value = cmd.type;
+  populateToolDropdown(document.getElementById('edit-cmd-tool'), cmd.tool);
+  document.getElementById('edit-cmd-modal').classList.add('show');
+}
+
+function closeEditCommandModal() {
+  document.getElementById('edit-cmd-modal').classList.remove('show');
+}
+
+function saveEditCommand() {
+  const cmdId = document.getElementById('edit-cmd-id').value;
+  const cmd = customCommands.find(c => c.id === cmdId);
+  if (!cmd) return;
+
+  const newTool = document.getElementById('edit-cmd-tool').value;
+  const newCommand = document.getElementById('edit-cmd-command').value.trim();
+  const newDesc = document.getElementById('edit-cmd-description').value.trim();
+
+  if (!newCommand) { showToast('\u26A0', 'Command is required'); return; }
+  if (!newDesc) { showToast('\u26A0', 'Description is required'); return; }
+
+  cmd.tool = newTool;
+  cmd.command = newCommand;
+  cmd.description = newDesc;
+  cmd.difficulty = document.getElementById('edit-cmd-difficulty').value;
+  cmd.type = document.getElementById('edit-cmd-type').value;
+
+  saveCustomCommands();
+  closeEditCommandModal();
+  buildSidebar();
+  buildMobilePills();
+  renderCards();
+  updateStats();
+  showToast('\u2713', 'Command updated!');
+}
+
+function deleteCommand(cmdId) {
+  const cmd = customCommands.find(c => c.id === cmdId);
+  if (!cmd) return;
+  if (!confirm('Delete this command?\n\n' + cmd.command)) return;
+
+  customCommands = customCommands.filter(c => c.id !== cmdId);
+  saveCustomCommands();
+  buildSidebar();
+  buildMobilePills();
+  renderCards();
+  updateStats();
+  showToast('\u2713', 'Command deleted');
 }
 
 // ===== EDIT TOOL MODAL =====
