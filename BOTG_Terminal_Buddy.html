@@ -1160,10 +1160,11 @@ const TOOL_CONFIG = {
   'Sentry':           { icon: '&#128737;', color: '#362D59' },
   'Apps':             { icon: '&#128640;', color: '#059669' },
   'Docker Apps':      { icon: '&#128051;', color: '#0891B2' },
-  'Next+Supa':        { icon: '&#9650;',   color: '#3ECF8E' }
+  'Next+Supa':        { icon: '&#9650;',   color: '#3ECF8E' },
+  'Claude Workflows': { icon: '&#9889;',   color: '#D97706' }
 };
 
-// ===== BUILT-IN COMMANDS (162 total) =====
+// ===== BUILT-IN COMMANDS (186 total) =====
 const BUILTIN_COMMANDS = [
   // === DOCKER (10) ===
   { id:'d1',  tool:'Docker', command:'docker build -t <name> .', description:'Build an image from a Dockerfile in the current directory', difficulty:'beginner', type:'most-used' },
@@ -1394,7 +1395,46 @@ const BUILTIN_COMMANDS = [
   { id:'ns21', tool:'Next+Supa', command:'vercel --prod', description:'Step 20: Deploy to production!', difficulty:'beginner', type:'most-used' },
 
   // Safety
-  { id:'ns22', tool:'Next+Supa', command:'supabase db reset', description:'Danger: Reset remote database — drops all tables and re-runs migrations from scratch', difficulty:'advanced', type:'danger-zone' }
+  { id:'ns22', tool:'Next+Supa', command:'supabase db reset', description:'Danger: Reset remote database — drops all tables and re-runs migrations from scratch', difficulty:'advanced', type:'danger-zone' },
+
+  // === CLAUDE WORKFLOWS: Claude Code Power Moves (24) ===
+  // Getting started
+  { id:'cw1',  tool:'Claude Workflows', command:'claude', description:'Launch Claude Code in interactive mode in the current project directory', difficulty:'beginner', type:'most-used' },
+  { id:'cw2',  tool:'Claude Workflows', command:'claude "build a login page with Supabase auth"', description:'Start a session with an initial prompt — jumps straight into work', difficulty:'beginner', type:'most-used' },
+  { id:'cw3',  tool:'Claude Workflows', command:'claude --resume', description:'Resume your most recent conversation (keeps full context)', difficulty:'beginner', type:'most-used' },
+  { id:'cw4',  tool:'Claude Workflows', command:'/init', description:'Generate a CLAUDE.md file — teaches Claude your project structure and conventions', difficulty:'beginner', type:'superpower' },
+
+  // Session management
+  { id:'cw5',  tool:'Claude Workflows', command:'/compact', description:'Compress conversation context when running long — frees up the context window', difficulty:'beginner', type:'most-used' },
+  { id:'cw6',  tool:'Claude Workflows', command:'/cost', description:'Check token usage and cost for the current session', difficulty:'beginner', type:'most-used' },
+  { id:'cw7',  tool:'Claude Workflows', command:'/clear', description:'Clear conversation history and start fresh (keeps CLAUDE.md context)', difficulty:'beginner', type:'most-used' },
+  { id:'cw8',  tool:'Claude Workflows', command:'claude config set model claude-sonnet-4-5-20250929', description:'Switch to Sonnet for faster, cheaper responses on simpler tasks', difficulty:'intermediate', type:'superpower' },
+
+  // Piping and non-interactive
+  { id:'cw9',  tool:'Claude Workflows', command:'claude -p "explain what this code does" < src/app/page.tsx', description:'Pipe a file into Claude for quick analysis (non-interactive, outputs to terminal)', difficulty:'intermediate', type:'superpower' },
+  { id:'cw10', tool:'Claude Workflows', command:'cat error.log | claude -p "find the root cause"', description:'Pipe logs or output into Claude — great for debugging build errors', difficulty:'intermediate', type:'superpower' },
+  { id:'cw11', tool:'Claude Workflows', command:'git diff | claude -p "write a commit message for these changes"', description:'Auto-generate commit messages from your staged changes', difficulty:'intermediate', type:'superpower' },
+  { id:'cw12', tool:'Claude Workflows', command:'claude -p "review this PR for bugs" < <(git diff main...HEAD)', description:'Pipe your full PR diff into Claude for a code review', difficulty:'advanced', type:'superpower' },
+
+  // Project workflows
+  { id:'cw13', tool:'Claude Workflows', command:'/commit', description:'Stage changes and create a well-formatted git commit with Claude', difficulty:'beginner', type:'most-used' },
+  { id:'cw14', tool:'Claude Workflows', command:'claude "add tests for the auth module"', description:'Workflow: Generate tests for existing code — Claude reads your code first', difficulty:'intermediate', type:'most-used' },
+  { id:'cw15', tool:'Claude Workflows', command:'claude "refactor this component to use server actions instead of API routes"', description:'Workflow: Refactor with context — Claude understands your codebase and migrates patterns', difficulty:'intermediate', type:'most-used' },
+  { id:'cw16', tool:'Claude Workflows', command:'claude "find and fix all TypeScript errors in the project"', description:'Workflow: Full project fix — Claude runs tsc, reads errors, fixes them across files', difficulty:'intermediate', type:'superpower' },
+
+  // Multi-file and architecture
+  { id:'cw17', tool:'Claude Workflows', command:'claude "create a full CRUD API for todos with Supabase: migration, types, server actions, and UI"', description:'Workflow: End-to-end feature — Claude creates migration, generates types, builds API + UI', difficulty:'advanced', type:'superpower' },
+  { id:'cw18', tool:'Claude Workflows', command:'claude "set up Supabase auth with middleware, login page, signup page, and protected routes"', description:'Workflow: Full auth system — Claude wires up everything from middleware to UI', difficulty:'advanced', type:'superpower' },
+
+  // CLAUDE.md power moves
+  { id:'cw19', tool:'Claude Workflows', command:'# In CLAUDE.md:\n## Project structure\n- App Router in src/app/\n- Supabase clients in src/lib/supabase/\n- Components in src/components/\n\n## Conventions\n- Use server components by default\n- Use Tailwind, no CSS modules\n- All DB access through server actions', description:'CLAUDE.md template: Teach Claude your project conventions so it writes code YOUR way', difficulty:'intermediate', type:'superpower' },
+  { id:'cw20', tool:'Claude Workflows', command:'# In ~/.claude/CLAUDE.md:\n- Always use TypeScript strict mode\n- Prefer server components\n- Use pnpm not npm\n- Never auto-commit', description:'Global CLAUDE.md: Set preferences that apply to ALL your projects', difficulty:'intermediate', type:'superpower' },
+
+  // Advanced workflows
+  { id:'cw21', tool:'Claude Workflows', command:'claude --dangerously-skip-permissions', description:'Run without permission prompts — use for trusted scripts only, not general coding', difficulty:'advanced', type:'danger-zone' },
+  { id:'cw22', tool:'Claude Workflows', command:'claude "read the CLAUDE.md, then give me a status report on the project"', description:'Workflow: Project status — Claude reads your docs and gives you the lay of the land', difficulty:'beginner', type:'most-used' },
+  { id:'cw23', tool:'Claude Workflows', command:'cat package.json | claude -p "audit these deps for security issues and outdated packages"', description:'Workflow: Dependency audit — quick security check without leaving the terminal', difficulty:'intermediate', type:'superpower' },
+  { id:'cw24', tool:'Claude Workflows', command:'claude "deploy this to Vercel and fix any build errors"', description:'Workflow: Deploy + fix — Claude runs the deploy, reads errors, fixes them, redeploys', difficulty:'advanced', type:'superpower' }
 ];
 
 // ===== STATE =====
