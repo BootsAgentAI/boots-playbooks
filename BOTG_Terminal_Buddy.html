@@ -1159,10 +1159,11 @@ const TOOL_CONFIG = {
   'npm/Node.js':      { icon: '&#128230;', color: '#CB3837' },
   'Sentry':           { icon: '&#128737;', color: '#362D59' },
   'Apps':             { icon: '&#128640;', color: '#059669' },
-  'Docker Apps':      { icon: '&#128051;', color: '#0891B2' }
+  'Docker Apps':      { icon: '&#128051;', color: '#0891B2' },
+  'Next+Supa':        { icon: '&#9650;',   color: '#3ECF8E' }
 };
 
-// ===== BUILT-IN COMMANDS (140 total) =====
+// ===== BUILT-IN COMMANDS (162 total) =====
 const BUILTIN_COMMANDS = [
   // === DOCKER (10) ===
   { id:'d1',  tool:'Docker', command:'docker build -t <name> .', description:'Build an image from a Dockerfile in the current directory', difficulty:'beginner', type:'most-used' },
@@ -1350,7 +1351,50 @@ const BUILTIN_COMMANDS = [
 
   // Safety commands
   { id:'da19', tool:'Docker Apps', command:'docker compose down && docker volume ls', description:'Safe cleanup: stop containers, then check what volumes exist before removing', difficulty:'beginner', type:'most-used' },
-  { id:'da20', tool:'Docker Apps', command:'docker compose down -v', description:'Nuclear option: stop everything AND delete database volume (data gone forever!)', difficulty:'advanced', type:'danger-zone' }
+  { id:'da20', tool:'Docker Apps', command:'docker compose down -v', description:'Nuclear option: stop everything AND delete database volume (data gone forever!)', difficulty:'advanced', type:'danger-zone' },
+
+  // === NEXT+SUPA: Next.js + Supabase + Vercel (22) ===
+  // Step 1: Project scaffolding
+  { id:'ns1',  tool:'Next+Supa', command:'npx create-next-app@latest <my-app> --typescript --tailwind --eslint --app --src-dir', description:'Step 1: Scaffold Next.js app with TypeScript, Tailwind, App Router, and src/ directory', difficulty:'beginner', type:'most-used' },
+  { id:'ns2',  tool:'Next+Supa', command:'cd <my-app> && npm install @supabase/supabase-js @supabase/ssr', description:'Step 2: Install Supabase client + SSR helpers for server components', difficulty:'beginner', type:'most-used' },
+  { id:'ns3',  tool:'Next+Supa', command:'npm install @supabase/auth-ui-react @supabase/auth-ui-shared', description:'Step 3: Install pre-built Auth UI components (login/signup forms for free)', difficulty:'beginner', type:'most-used' },
+
+  // Step 2: Supabase project setup
+  { id:'ns4',  tool:'Next+Supa', command:'supabase login', description:'Step 4: Authenticate Supabase CLI with your account', difficulty:'beginner', type:'most-used' },
+  { id:'ns5',  tool:'Next+Supa', command:'supabase init', description:'Step 5: Initialize Supabase config in your project (creates supabase/ directory)', difficulty:'beginner', type:'most-used' },
+  { id:'ns6',  tool:'Next+Supa', command:'supabase link --project-ref <your-project-ref>', description:'Step 6: Link local project to your remote Supabase project', difficulty:'intermediate', type:'most-used' },
+
+  // Step 3: Environment variables
+  { id:'ns7',  tool:'Next+Supa', command:'echo "NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co\nNEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>" > .env.local', description:'Step 7: Create .env.local with Supabase URL and anon key (safe for client-side)', difficulty:'beginner', type:'most-used' },
+  { id:'ns8',  tool:'Next+Supa', command:'echo ".env*.local" >> .gitignore', description:'Step 8: Make sure .env.local is gitignored (should already be, but verify)', difficulty:'beginner', type:'most-used' },
+
+  // Step 4: Supabase client setup
+  { id:'ns9',  tool:'Next+Supa', command:'# src/lib/supabase/client.ts\nimport { createBrowserClient } from "@supabase/ssr"\n\nexport function createClient() {\n  return createBrowserClient(\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!\n  )\n}', description:'Step 9: Create browser client — use this in Client Components ("use client")', difficulty:'intermediate', type:'superpower' },
+  { id:'ns10', tool:'Next+Supa', command:'# src/lib/supabase/server.ts\nimport { createServerClient } from "@supabase/ssr"\nimport { cookies } from "next/headers"\n\nexport async function createClient() {\n  const cookieStore = await cookies()\n  return createServerClient(\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,\n    { cookies: {\n        getAll() { return cookieStore.getAll() },\n        setAll(cookiesToSet) {\n          cookiesToSet.forEach(({ name, value, options }) =>\n            cookieStore.set(name, value, options))\n        },\n    }}\n  )\n}', description:'Step 10: Create server client — use this in Server Components and Route Handlers', difficulty:'intermediate', type:'superpower' },
+
+  // Step 5: Database
+  { id:'ns11', tool:'Next+Supa', command:'supabase migration new create_initial_tables', description:'Step 11: Create a new migration file for your database schema', difficulty:'intermediate', type:'most-used' },
+  { id:'ns12', tool:'Next+Supa', command:'supabase db push', description:'Step 12: Push migrations to your remote Supabase database', difficulty:'intermediate', type:'most-used' },
+  { id:'ns13', tool:'Next+Supa', command:'supabase gen types typescript --project-id <ref> > src/lib/supabase/types.ts', description:'Step 13: Generate TypeScript types from your database schema (autocomplete!)', difficulty:'intermediate', type:'superpower' },
+
+  // Step 6: Auth middleware
+  { id:'ns14', tool:'Next+Supa', command:'# src/middleware.ts\nimport { createServerClient } from "@supabase/ssr"\nimport { NextResponse, type NextRequest } from "next/server"\n\nexport async function middleware(request: NextRequest) {\n  let response = NextResponse.next({ request })\n  const supabase = createServerClient(\n    process.env.NEXT_PUBLIC_SUPABASE_URL!,\n    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,\n    { cookies: {\n        getAll() { return request.cookies.getAll() },\n        setAll(cookiesToSet) {\n          cookiesToSet.forEach(({ name, value, options }) => {\n            request.cookies.set(name, value)\n            response.cookies.set(name, value, options)\n          })\n        },\n    }}\n  )\n  await supabase.auth.getUser()\n  return response\n}\n\nexport const config = {\n  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],\n}', description:'Step 14: Create auth middleware — refreshes session on every request, protects routes', difficulty:'advanced', type:'superpower' },
+
+  // Step 7: RLS (Row Level Security)
+  { id:'ns15', tool:'Next+Supa', command:'-- In your migration file:\nALTER TABLE your_table ENABLE ROW LEVEL SECURITY;\n\nCREATE POLICY "Users can read own data"\n  ON your_table FOR SELECT\n  USING (auth.uid() = user_id);\n\nCREATE POLICY "Users can insert own data"\n  ON your_table FOR INSERT\n  WITH CHECK (auth.uid() = user_id);', description:'Step 15: Enable RLS — this is your security layer, locks data to the logged-in user', difficulty:'intermediate', type:'superpower' },
+
+  // Step 8: Dev workflow
+  { id:'ns16', tool:'Next+Supa', command:'npm run dev', description:'Step 16: Run Next.js dev server (hot reload, API routes, the works)', difficulty:'beginner', type:'most-used' },
+  { id:'ns17', tool:'Next+Supa', command:'supabase gen types typescript --project-id <ref> > src/lib/supabase/types.ts', description:'Re-run after any DB schema change to keep TypeScript types in sync', difficulty:'intermediate', type:'most-used' },
+
+  // Step 9: Deploy to Vercel
+  { id:'ns18', tool:'Next+Supa', command:'git init && git add . && git commit -m "Initial commit: Next.js + Supabase"', description:'Step 17: Initialize git and make first commit', difficulty:'beginner', type:'most-used' },
+  { id:'ns19', tool:'Next+Supa', command:'gh repo create <my-app> --public --source . --push', description:'Step 18: Create GitHub repo and push', difficulty:'intermediate', type:'superpower' },
+  { id:'ns20', tool:'Next+Supa', command:'vercel link && vercel env add NEXT_PUBLIC_SUPABASE_URL && vercel env add NEXT_PUBLIC_SUPABASE_ANON_KEY', description:'Step 19: Link Vercel project and add Supabase env vars', difficulty:'intermediate', type:'most-used' },
+  { id:'ns21', tool:'Next+Supa', command:'vercel --prod', description:'Step 20: Deploy to production!', difficulty:'beginner', type:'most-used' },
+
+  // Safety
+  { id:'ns22', tool:'Next+Supa', command:'supabase db reset', description:'Danger: Reset remote database — drops all tables and re-runs migrations from scratch', difficulty:'advanced', type:'danger-zone' }
 ];
 
 // ===== STATE =====
