@@ -690,6 +690,42 @@
     border: 1.5px solid #e2e8f0;
   }
 
+  /* ===== SIDEBAR EDIT BUTTON ===== */
+  .sidebar-item-edit {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.7rem;
+    color: var(--gray);
+    padding: 0.15rem 0.3rem;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.15s;
+    margin-left: 0.3rem;
+  }
+
+  .sidebar-item:hover .sidebar-item-edit { opacity: 1; }
+  .sidebar-item-edit:hover { background: #e2e8f0; color: var(--navy); }
+
+  /* ===== EDIT TOOL MODAL ===== */
+  .edit-tool-preview {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #F8FAFC;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
+  .edit-tool-preview-badge {
+    padding: 0.3rem 0.6rem;
+    border-radius: 6px;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+
   /* ===== IMPORT MODAL ===== */
   .import-modal { max-width: 700px; }
 
@@ -991,6 +1027,39 @@
     </div>
   </div>
 
+  <!-- EDIT TOOL MODAL -->
+  <div class="modal-overlay" id="edit-tool-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>Edit Custom Tool</h2>
+        <button class="modal-close" onclick="closeEditToolModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="edit-tool-preview" id="edit-tool-preview"></div>
+        <input type="hidden" id="edit-tool-original-name" />
+        <div class="form-group">
+          <label>Tool Name</label>
+          <input type="text" id="edit-tool-name" placeholder="e.g. Python" />
+        </div>
+        <div class="new-tool-row">
+          <div class="form-group">
+            <label>Icon (emoji)</label>
+            <input type="text" id="edit-tool-icon" placeholder="&#128013;" maxlength="4" style="font-size:1.2rem;text-align:center;" />
+          </div>
+          <div class="form-group">
+            <label>Color <span class="color-preview" id="edit-tool-color-preview"></span></label>
+            <input type="color" id="edit-tool-color" style="height:36px;padding:2px;cursor:pointer;" onchange="document.getElementById('edit-tool-color-preview').style.background=this.value;updateEditToolPreview()" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="modal-btn danger" onclick="deleteCustomTool()">Delete Tool</button>
+        <button class="modal-btn" onclick="closeEditToolModal()">Cancel</button>
+        <button class="modal-btn primary" onclick="saveEditTool()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST -->
   <div class="toast" id="toast">
     <span class="toast-icon" id="toast-icon"></span>
@@ -1264,6 +1333,16 @@ function createSidebarItem(tool, iconHTML, count, isActive) {
   label.className = 'sidebar-item-label';
   label.textContent = tool;
 
+  // Edit button for custom tools
+  if (customTools[tool]) {
+    const editBtn = document.createElement('button');
+    editBtn.className = 'sidebar-item-edit';
+    editBtn.textContent = '\u270E';
+    editBtn.title = 'Edit tool';
+    editBtn.onclick = (e) => { e.stopPropagation(); openEditToolModal(tool); };
+    label.appendChild(editBtn);
+  }
+
   const countEl = document.createElement('span');
   countEl.className = 'sidebar-item-count';
   countEl.textContent = count;
@@ -1464,10 +1543,9 @@ function saveCommand() {
 
     if (!toolName) { showToast('\u26A0', 'Tool name is required'); return; }
 
-    // Register the new tool
-    const iconHTML = '&#' + toolIcon.codePointAt(0) + ';';
-    TOOL_CONFIG[toolName] = { icon: iconHTML, color: toolColor };
-    customTools[toolName] = { icon: iconHTML, color: toolColor };
+    // Register the new tool — store raw emoji, not HTML entity
+    TOOL_CONFIG[toolName] = { icon: toolIcon, color: toolColor };
+    customTools[toolName] = { icon: toolIcon, color: toolColor };
     saveCustomTools();
     tool = toolName;
     showToast('\u2728', toolName + ' tool created!');
@@ -1495,6 +1573,101 @@ function saveCommand() {
   renderCards();
   updateStats();
   showToast('\u2713', 'Command added!');
+}
+
+// ===== EDIT TOOL MODAL =====
+function openEditToolModal(toolName) {
+  const cfg = TOOL_CONFIG[toolName];
+  if (!cfg) return;
+
+  document.getElementById('edit-tool-original-name').value = toolName;
+  document.getElementById('edit-tool-name').value = toolName;
+  document.getElementById('edit-tool-icon').value = cfg.icon;
+  document.getElementById('edit-tool-color').value = cfg.color;
+  document.getElementById('edit-tool-color-preview').style.background = cfg.color;
+  updateEditToolPreview();
+  document.getElementById('edit-tool-modal').classList.add('show');
+}
+
+function closeEditToolModal() {
+  document.getElementById('edit-tool-modal').classList.remove('show');
+}
+
+function updateEditToolPreview() {
+  const name = document.getElementById('edit-tool-name').value || 'Tool';
+  const icon = document.getElementById('edit-tool-icon').value || '\u{1F4E6}';
+  const color = document.getElementById('edit-tool-color').value;
+  const preview = document.getElementById('edit-tool-preview');
+  preview.textContent = '';
+  const badge = document.createElement('span');
+  badge.className = 'edit-tool-preview-badge';
+  badge.style.background = color;
+  badge.textContent = icon + ' ' + name;
+  const hint = document.createElement('span');
+  hint.style.cssText = 'font-size:0.8rem;color:#6C757D;';
+  hint.textContent = 'Preview of how it will look';
+  preview.appendChild(badge);
+  preview.appendChild(hint);
+}
+
+function saveEditTool() {
+  const originalName = document.getElementById('edit-tool-original-name').value;
+  const newName = document.getElementById('edit-tool-name').value.trim();
+  const newIcon = document.getElementById('edit-tool-icon').value.trim() || '\u{1F4E6}';
+  const newColor = document.getElementById('edit-tool-color').value;
+
+  if (!newName) { showToast('\u26A0', 'Tool name is required'); return; }
+
+  // Update TOOL_CONFIG
+  if (newName !== originalName) {
+    delete TOOL_CONFIG[originalName];
+    delete customTools[originalName];
+    // Update all custom commands that used the old name
+    customCommands.forEach(cmd => {
+      if (cmd.tool === originalName) cmd.tool = newName;
+    });
+    saveCustomCommands();
+    if (activeTool === originalName) activeTool = newName;
+  }
+
+  TOOL_CONFIG[newName] = { icon: newIcon, color: newColor };
+  customTools[newName] = { icon: newIcon, color: newColor };
+  saveCustomTools();
+
+  closeEditToolModal();
+  buildSidebar();
+  buildMobilePills();
+  renderCards();
+  updateStats();
+  showToast('\u2713', newName + ' updated!');
+}
+
+function deleteCustomTool() {
+  const toolName = document.getElementById('edit-tool-original-name').value;
+  const cmdCount = customCommands.filter(c => c.tool === toolName).length;
+  const msg = cmdCount > 0
+    ? 'Delete "' + toolName + '" and its ' + cmdCount + ' custom command' + (cmdCount !== 1 ? 's' : '') + '?'
+    : 'Delete "' + toolName + '"?';
+
+  if (!confirm(msg)) return;
+
+  // Remove commands for this tool
+  customCommands = customCommands.filter(c => c.tool !== toolName);
+  saveCustomCommands();
+
+  // Remove tool
+  delete TOOL_CONFIG[toolName];
+  delete customTools[toolName];
+  saveCustomTools();
+
+  if (activeTool === toolName) activeTool = 'All';
+
+  closeEditToolModal();
+  buildSidebar();
+  buildMobilePills();
+  renderCards();
+  updateStats();
+  showToast('\u2713', toolName + ' deleted');
 }
 
 // ===== IMPORT =====
