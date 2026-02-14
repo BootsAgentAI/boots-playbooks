@@ -460,6 +460,7 @@
   .tag-intermediate { background: #FEF3C7; color: #92400E; }
   .tag-advanced { background: #FCE7F3; color: #9D174D; }
   .tag-custom { background: linear-gradient(135deg, #D4A843, #E0B854); color: var(--navy); }
+  .tag-edited { background: #E0E7FF; color: #3730A3; }
 
   .card-desc {
     font-size: 0.85rem;
@@ -946,7 +947,7 @@
       <button class="filter-chip" data-filter="intermediate">Intermediate</button>
       <button class="filter-chip" data-filter="advanced">Advanced</button>
     </div>
-    <div class="toolbar-actions">
+    <div class="toolbar-actions" id="toolbar-actions">
       <button class="toolbar-btn primary" onclick="openAddModal()">+ Add</button>
       <button class="toolbar-btn" onclick="openImportModal()">&#128229; Import</button>
       <button class="toolbar-btn" onclick="exportCommands()">&#128228; Export</button>
@@ -1287,8 +1288,12 @@ const BUILTIN_COMMANDS = [
 // ===== STATE =====
 const STORAGE_KEY = 'boots-terminal-buddy-commands';
 const TOOLS_STORAGE_KEY = 'boots-terminal-buddy-tools';
+const HIDDEN_STORAGE_KEY = 'boots-terminal-buddy-hidden';
+const EDITS_STORAGE_KEY = 'boots-terminal-buddy-edits';
 let customCommands = [];
 let customTools = {};
+let hiddenCommands = new Set();
+let editedCommands = {};
 let activeTool = 'All';
 let activeFilter = 'all';
 let searchQuery = '';
@@ -1298,6 +1303,8 @@ let parsedImportCommands = [];
 function init() {
   loadCustomTools();
   loadCustomCommands();
+  loadHiddenCommands();
+  loadEditedCommands();
   buildSidebar();
   buildMobilePills();
   renderCards();
@@ -1305,6 +1312,7 @@ function init() {
   setupSearch();
   setupFilterChips();
   setupDragDrop();
+  updateRestoreButton();
 }
 
 // ===== CUSTOM TOOLS =====
@@ -1366,10 +1374,42 @@ function saveCustomCommands() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(customCommands));
 }
 
+// ===== HIDDEN COMMANDS =====
+function loadHiddenCommands() {
+  try {
+    const stored = localStorage.getItem(HIDDEN_STORAGE_KEY);
+    hiddenCommands = stored ? new Set(JSON.parse(stored)) : new Set();
+  } catch { hiddenCommands = new Set(); }
+}
+
+function saveHiddenCommands() {
+  localStorage.setItem(HIDDEN_STORAGE_KEY, JSON.stringify([...hiddenCommands]));
+}
+
+// ===== EDITED COMMANDS (overrides for built-ins) =====
+function loadEditedCommands() {
+  try {
+    const stored = localStorage.getItem(EDITS_STORAGE_KEY);
+    editedCommands = stored ? JSON.parse(stored) : {};
+  } catch { editedCommands = {}; }
+}
+
+function saveEditedCommands() {
+  localStorage.setItem(EDITS_STORAGE_KEY, JSON.stringify(editedCommands));
+}
+
 // ===== ALL COMMANDS =====
 function getAllCommands() {
-  const builtIn = BUILTIN_COMMANDS.map(c => ({ ...c, source: 'builtin' }));
-  const custom = customCommands.map(c => ({ ...c, source: 'custom' }));
+  const builtIn = BUILTIN_COMMANDS
+    .filter(c => !hiddenCommands.has(c.id))
+    .map(c => {
+      const edits = editedCommands[c.id];
+      const merged = edits ? { ...c, ...edits, source: 'builtin', edited: true } : { ...c, source: 'builtin' };
+      return merged;
+    });
+  const custom = customCommands
+    .filter(c => !hiddenCommands.has(c.id))
+    .map(c => ({ ...c, source: 'custom' }));
   return [...builtIn, ...custom];
 }
 
@@ -1571,6 +1611,12 @@ function renderCards() {
       c.textContent = 'Custom';
       badges.appendChild(c);
     }
+    if (cmd.edited) {
+      const e = document.createElement('span');
+      e.className = 'card-tag tag-edited';
+      e.textContent = 'Edited';
+      badges.appendChild(e);
+    }
     top.appendChild(badges);
     card.appendChild(top);
 
@@ -1601,25 +1647,39 @@ function renderCards() {
     diff.textContent = cmd.difficulty.charAt(0).toUpperCase() + cmd.difficulty.slice(1) + ' level';
     card.appendChild(diff);
 
-    // Edit/Delete for custom commands
+    // Edit/Delete/Reset actions for all cards
+    const actions = document.createElement('div');
+    actions.className = 'card-actions';
+
+    const editBtn = document.createElement('button');
+    editBtn.className = 'card-action-btn';
+    editBtn.textContent = '\u270E Edit';
+    editBtn.onclick = () => openEditCommandModal(cmd.id);
+    actions.appendChild(editBtn);
+
     if (isCustom) {
-      const actions = document.createElement('div');
-      actions.className = 'card-actions';
-
-      const editBtn = document.createElement('button');
-      editBtn.className = 'card-action-btn';
-      editBtn.textContent = '\u270E Edit';
-      editBtn.onclick = () => openEditCommandModal(cmd.id);
-      actions.appendChild(editBtn);
-
       const delBtn = document.createElement('button');
       delBtn.className = 'card-action-btn delete-btn';
       delBtn.textContent = '\u2715 Delete';
       delBtn.onclick = () => deleteCommand(cmd.id);
       actions.appendChild(delBtn);
+    } else {
+      const hideBtn = document.createElement('button');
+      hideBtn.className = 'card-action-btn delete-btn';
+      hideBtn.textContent = '\u2715 Hide';
+      hideBtn.onclick = () => hideCommand(cmd.id);
+      actions.appendChild(hideBtn);
 
-      card.appendChild(actions);
+      if (cmd.edited) {
+        const resetBtn = document.createElement('button');
+        resetBtn.className = 'card-action-btn';
+        resetBtn.textContent = '\u21A9 Reset';
+        resetBtn.onclick = () => resetCommand(cmd.id);
+        actions.appendChild(resetBtn);
+      }
     }
+
+    card.appendChild(actions);
 
     grid.appendChild(card);
   });
@@ -1723,8 +1783,20 @@ function saveCommand() {
 }
 
 // ===== EDIT COMMAND MODAL =====
+function findCommand(cmdId) {
+  // Check custom commands first, then built-in (with edits applied)
+  const custom = customCommands.find(c => c.id === cmdId);
+  if (custom) return { ...custom, source: 'custom' };
+  const builtin = BUILTIN_COMMANDS.find(c => c.id === cmdId);
+  if (builtin) {
+    const edits = editedCommands[cmdId];
+    return edits ? { ...builtin, ...edits, source: 'builtin' } : { ...builtin, source: 'builtin' };
+  }
+  return null;
+}
+
 function openEditCommandModal(cmdId) {
-  const cmd = customCommands.find(c => c.id === cmdId);
+  const cmd = findCommand(cmdId);
   if (!cmd) return;
 
   document.getElementById('edit-cmd-id').value = cmdId;
@@ -1742,23 +1814,36 @@ function closeEditCommandModal() {
 
 function saveEditCommand() {
   const cmdId = document.getElementById('edit-cmd-id').value;
-  const cmd = customCommands.find(c => c.id === cmdId);
-  if (!cmd) return;
-
   const newTool = document.getElementById('edit-cmd-tool').value;
   const newCommand = document.getElementById('edit-cmd-command').value.trim();
   const newDesc = document.getElementById('edit-cmd-description').value.trim();
+  const newDifficulty = document.getElementById('edit-cmd-difficulty').value;
+  const newType = document.getElementById('edit-cmd-type').value;
 
   if (!newCommand) { showToast('\u26A0', 'Command is required'); return; }
   if (!newDesc) { showToast('\u26A0', 'Description is required'); return; }
 
-  cmd.tool = newTool;
-  cmd.command = newCommand;
-  cmd.description = newDesc;
-  cmd.difficulty = document.getElementById('edit-cmd-difficulty').value;
-  cmd.type = document.getElementById('edit-cmd-type').value;
+  // Check if it's a custom command or built-in
+  const customCmd = customCommands.find(c => c.id === cmdId);
+  if (customCmd) {
+    customCmd.tool = newTool;
+    customCmd.command = newCommand;
+    customCmd.description = newDesc;
+    customCmd.difficulty = newDifficulty;
+    customCmd.type = newType;
+    saveCustomCommands();
+  } else {
+    // Built-in: save as override
+    editedCommands[cmdId] = {
+      tool: newTool,
+      command: newCommand,
+      description: newDesc,
+      difficulty: newDifficulty,
+      type: newType
+    };
+    saveEditedCommands();
+  }
 
-  saveCustomCommands();
   closeEditCommandModal();
   buildSidebar();
   buildMobilePills();
@@ -1774,11 +1859,72 @@ function deleteCommand(cmdId) {
 
   customCommands = customCommands.filter(c => c.id !== cmdId);
   saveCustomCommands();
+  refreshAll();
+  showToast('\u2713', 'Command deleted');
+}
+
+function hideCommand(cmdId) {
+  const cmd = findCommand(cmdId);
+  if (!cmd) return;
+  if (!confirm('Hide this command?\n\n' + cmd.command + '\n\nYou can restore hidden commands from the toolbar.')) return;
+
+  hiddenCommands.add(cmdId);
+  saveHiddenCommands();
+  refreshAll();
+  showToast('\u2713', 'Command hidden');
+}
+
+function resetCommand(cmdId) {
+  delete editedCommands[cmdId];
+  saveEditedCommands();
+  refreshAll();
+  showToast('\u21A9', 'Reset to original');
+}
+
+function refreshAll() {
   buildSidebar();
   buildMobilePills();
   renderCards();
   updateStats();
-  showToast('\u2713', 'Command deleted');
+  updateRestoreButton();
+}
+
+function updateRestoreButton() {
+  const actions = document.getElementById('toolbar-actions');
+  const existing = document.getElementById('restore-btn');
+  if (existing) existing.remove();
+
+  if (hiddenCommands.size > 0) {
+    const btn = document.createElement('button');
+    btn.className = 'toolbar-btn';
+    btn.id = 'restore-btn';
+    btn.textContent = '\u{1F441} Restore (' + hiddenCommands.size + ')';
+    btn.onclick = openRestoreModal;
+    actions.appendChild(btn);
+  }
+}
+
+function openRestoreModal() {
+  const hiddenList = [...hiddenCommands].map(id => {
+    const builtin = BUILTIN_COMMANDS.find(c => c.id === id);
+    const custom = customCommands.find(c => c.id === id);
+    return builtin || custom;
+  }).filter(Boolean);
+
+  if (hiddenList.length === 0) return;
+
+  let msg = 'Hidden commands:\n\n';
+  hiddenList.forEach((cmd, i) => {
+    msg += (i + 1) + '. [' + cmd.tool + '] ' + cmd.command + '\n';
+  });
+  msg += '\nRestore all hidden commands?';
+
+  if (confirm(msg)) {
+    hiddenCommands.clear();
+    saveHiddenCommands();
+    refreshAll();
+    showToast('\u2713', 'All commands restored!');
+  }
 }
 
 // ===== EDIT TOOL MODAL =====
