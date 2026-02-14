@@ -1158,10 +1158,11 @@ const TOOL_CONFIG = {
   'Mac/Terminal':     { icon: '&#128187;', color: '#555555' },
   'npm/Node.js':      { icon: '&#128230;', color: '#CB3837' },
   'Sentry':           { icon: '&#128737;', color: '#362D59' },
-  'Apps':             { icon: '&#128640;', color: '#059669' }
+  'Apps':             { icon: '&#128640;', color: '#059669' },
+  'Docker Apps':      { icon: '&#128051;', color: '#0891B2' }
 };
 
-// ===== BUILT-IN COMMANDS (120 total) =====
+// ===== BUILT-IN COMMANDS (140 total) =====
 const BUILTIN_COMMANDS = [
   // === DOCKER (10) ===
   { id:'d1',  tool:'Docker', command:'docker build -t <name> .', description:'Build an image from a Dockerfile in the current directory', difficulty:'beginner', type:'most-used' },
@@ -1314,7 +1315,42 @@ const BUILTIN_COMMANDS = [
   // Bonus: Dev workflow commands
   { id:'app16', tool:'Apps', command:'cd api && pip install httpx pytest pytest-asyncio && pytest', description:'Bonus: Install test deps and run FastAPI tests', difficulty:'intermediate', type:'superpower' },
   { id:'app17', tool:'Apps', command:'cd frontend && npm run preview', description:'Bonus: Preview the production build locally before deploying', difficulty:'intermediate', type:'superpower' },
-  { id:'app18', tool:'Apps', command:'vercel logs <url> --follow', description:'Bonus: Stream live production logs to debug API issues after deploy', difficulty:'intermediate', type:'superpower' }
+  { id:'app18', tool:'Apps', command:'vercel logs <url> --follow', description:'Bonus: Stream live production logs to debug API issues after deploy', difficulty:'intermediate', type:'superpower' },
+
+  // === DOCKER APPS: Containerized Full-Stack App (20) ===
+  // Step 1: Project setup
+  { id:'da1',  tool:'Docker Apps', command:'mkdir <my-app> && cd <my-app> && mkdir api frontend', description:'Step 1: Create project root with api/ and frontend/ directories', difficulty:'beginner', type:'most-used' },
+  { id:'da2',  tool:'Docker Apps', command:'cd frontend && npm create vite@latest . -- --template react && npm install', description:'Step 2: Scaffold Vite React frontend and install deps', difficulty:'beginner', type:'most-used' },
+  { id:'da3',  tool:'Docker Apps', command:'cd api && python3 -m venv venv && source venv/bin/activate && pip install fastapi uvicorn', description:'Step 3: Set up Python venv and install FastAPI for the backend', difficulty:'beginner', type:'most-used' },
+  { id:'da4',  tool:'Docker Apps', command:'pip freeze > api/requirements.txt', description:'Step 4: Lock Python deps — Docker will use this to install packages', difficulty:'beginner', type:'most-used' },
+
+  // Step 2: Dockerfiles (what to put in them)
+  { id:'da5',  tool:'Docker Apps', command:'# frontend/Dockerfile\nFROM node:20-alpine AS build\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\nFROM nginx:alpine\nCOPY --from=build /app/dist /usr/share/nginx/html\nEXPOSE 80', description:'Step 5: Create frontend Dockerfile — multi-stage build: Node builds, Nginx serves', difficulty:'intermediate', type:'superpower' },
+  { id:'da6',  tool:'Docker Apps', command:'# api/Dockerfile\nFROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]', description:'Step 6: Create API Dockerfile — slim Python image, installs deps, runs uvicorn', difficulty:'intermediate', type:'superpower' },
+
+  // Step 3: Docker Compose
+  { id:'da7',  tool:'Docker Apps', command:'# docker-compose.yml\nservices:\n  api:\n    build: ./api\n    ports:\n      - "8000:8000"\n    volumes:\n      - ./api:/app\n    environment:\n      - DATABASE_URL=postgresql://postgres:postgres@db:5432/myapp\n  frontend:\n    build: ./frontend\n    ports:\n      - "3000:80"\n    depends_on:\n      - api\n  db:\n    image: postgres:16-alpine\n    environment:\n      - POSTGRES_PASSWORD=postgres\n      - POSTGRES_DB=myapp\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    ports:\n      - "5432:5432"\nvolumes:\n  pgdata:', description:'Step 7: Create docker-compose.yml — API + Frontend + Postgres, all wired together', difficulty:'intermediate', type:'superpower' },
+
+  // Step 4: Build and run
+  { id:'da8',  tool:'Docker Apps', command:'docker compose build', description:'Step 8: Build all container images (first time takes a few minutes)', difficulty:'beginner', type:'most-used' },
+  { id:'da9',  tool:'Docker Apps', command:'docker compose up -d', description:'Step 9: Start all services in background — your app is now running!', difficulty:'beginner', type:'most-used' },
+  { id:'da10', tool:'Docker Apps', command:'docker compose ps', description:'Step 10: Verify all 3 services are running (api, frontend, db)', difficulty:'beginner', type:'most-used' },
+  { id:'da11', tool:'Docker Apps', command:'docker compose logs -f api', description:'Step 11: Watch API logs in real time — see requests hitting FastAPI', difficulty:'beginner', type:'most-used' },
+
+  // Step 5: Dev workflow
+  { id:'da12', tool:'Docker Apps', command:'docker compose up -d --build api', description:'Rebuild and restart just the API after code changes', difficulty:'intermediate', type:'most-used' },
+  { id:'da13', tool:'Docker Apps', command:'docker compose exec api sh', description:'Open a shell inside the running API container to debug', difficulty:'intermediate', type:'superpower' },
+  { id:'da14', tool:'Docker Apps', command:'docker compose exec db psql -U postgres -d myapp', description:'Connect to Postgres inside the container — run SQL directly', difficulty:'intermediate', type:'superpower' },
+  { id:'da15', tool:'Docker Apps', command:'docker compose down', description:'Stop all containers gracefully (data persists in volumes)', difficulty:'beginner', type:'most-used' },
+
+  // Step 6: Production + Deploy
+  { id:'da16', tool:'Docker Apps', command:'docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d', description:'Run with production overrides (different env vars, no volumes)', difficulty:'advanced', type:'superpower' },
+  { id:'da17', tool:'Docker Apps', command:'docker buildx build --platform linux/amd64 -t <registry>/<my-app>-api:latest ./api', description:'Build for Linux/amd64 (needed when deploying from Apple Silicon Mac)', difficulty:'advanced', type:'superpower' },
+  { id:'da18', tool:'Docker Apps', command:'docker compose push', description:'Push all images to your container registry for deployment', difficulty:'advanced', type:'most-used' },
+
+  // Safety commands
+  { id:'da19', tool:'Docker Apps', command:'docker compose down && docker volume ls', description:'Safe cleanup: stop containers, then check what volumes exist before removing', difficulty:'beginner', type:'most-used' },
+  { id:'da20', tool:'Docker Apps', command:'docker compose down -v', description:'Nuclear option: stop everything AND delete database volume (data gone forever!)', difficulty:'advanced', type:'danger-zone' }
 ];
 
 // ===== STATE =====
