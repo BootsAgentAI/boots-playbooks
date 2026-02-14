@@ -1161,10 +1161,16 @@ const TOOL_CONFIG = {
   'Apps':             { icon: '&#128640;', color: '#059669' },
   'Docker Apps':      { icon: '&#128051;', color: '#0891B2' },
   'Next+Supa':        { icon: '&#9650;',   color: '#3ECF8E' },
-  'Claude Workflows': { icon: '&#9889;',   color: '#D97706' }
+  'Claude Workflows': { icon: '&#9889;',   color: '#D97706' },
+  'Git Rescue':       { icon: '&#128657;', color: '#F43F5E' },
+  'Shell Scripts':    { icon: '&#9000;',   color: '#7C3AED' },
+  'Debugging':        { icon: '&#128270;', color: '#DC2626' },
+  'SQL Power':        { icon: '&#128450;', color: '#0369A1' },
+  'GitHub Actions':   { icon: '&#9881;',   color: '#2D333B' },
+  'Security':         { icon: '&#128274;', color: '#991B1B' }
 };
 
-// ===== BUILT-IN COMMANDS (186 total) =====
+// ===== BUILT-IN COMMANDS (278 total) =====
 const BUILTIN_COMMANDS = [
   // === DOCKER (10) ===
   { id:'d1',  tool:'Docker', command:'docker build -t <name> .', description:'Build an image from a Dockerfile in the current directory', difficulty:'beginner', type:'most-used' },
@@ -1434,7 +1440,111 @@ const BUILTIN_COMMANDS = [
   { id:'cw21', tool:'Claude Workflows', command:'claude --dangerously-skip-permissions', description:'Run without permission prompts — use for trusted scripts only, not general coding', difficulty:'advanced', type:'danger-zone' },
   { id:'cw22', tool:'Claude Workflows', command:'claude "read the CLAUDE.md, then give me a status report on the project"', description:'Workflow: Project status — Claude reads your docs and gives you the lay of the land', difficulty:'beginner', type:'most-used' },
   { id:'cw23', tool:'Claude Workflows', command:'cat package.json | claude -p "audit these deps for security issues and outdated packages"', description:'Workflow: Dependency audit — quick security check without leaving the terminal', difficulty:'intermediate', type:'superpower' },
-  { id:'cw24', tool:'Claude Workflows', command:'claude "deploy this to Vercel and fix any build errors"', description:'Workflow: Deploy + fix — Claude runs the deploy, reads errors, fixes them, redeploys', difficulty:'advanced', type:'superpower' }
+  { id:'cw24', tool:'Claude Workflows', command:'claude "deploy this to Vercel and fix any build errors"', description:'Workflow: Deploy + fix — Claude runs the deploy, reads errors, fixes them, redeploys', difficulty:'advanced', type:'superpower' },
+
+  // === GIT RESCUE: When Everything Goes Wrong (16) ===
+  { id:'gr1',  tool:'Git Rescue', command:'git reflog', description:'View EVERY action Git recorded — your undo history, even after reset --hard', difficulty:'intermediate', type:'superpower' },
+  { id:'gr2',  tool:'Git Rescue', command:'git checkout -b rescue-branch HEAD@{5}', description:'Recover lost work: create a branch from a reflog entry', difficulty:'advanced', type:'superpower' },
+  { id:'gr3',  tool:'Git Rescue', command:'git stash list', description:'See all your stashed changes (most people forget they have stashes)', difficulty:'beginner', type:'most-used' },
+  { id:'gr4',  tool:'Git Rescue', command:'git stash show -p stash@{0}', description:'Preview what a stash contains before applying it', difficulty:'intermediate', type:'most-used' },
+  { id:'gr5',  tool:'Git Rescue', command:'git stash pop', description:'Apply the most recent stash and remove it from the stash list', difficulty:'beginner', type:'most-used' },
+  { id:'gr6',  tool:'Git Rescue', command:'git cherry-pick <commit-hash>', description:'Copy a single commit from another branch into your current branch', difficulty:'intermediate', type:'superpower' },
+  { id:'gr7',  tool:'Git Rescue', command:'git bisect start && git bisect bad && git bisect good <hash>', description:'Binary search through commits to find exactly which one introduced a bug', difficulty:'advanced', type:'superpower' },
+  { id:'gr8',  tool:'Git Rescue', command:'git bisect reset', description:'Exit bisect mode and return to your original branch', difficulty:'intermediate', type:'most-used' },
+  { id:'gr9',  tool:'Git Rescue', command:'git worktree add ../feature-branch feature-branch', description:'Check out a branch in a separate directory — work on two branches simultaneously', difficulty:'advanced', type:'superpower' },
+  { id:'gr10', tool:'Git Rescue', command:'git worktree list', description:'See all active worktrees and which branches they track', difficulty:'intermediate', type:'most-used' },
+  { id:'gr11', tool:'Git Rescue', command:'git log --oneline --graph --all', description:'Visual branch history — see how branches diverge and merge', difficulty:'beginner', type:'most-used' },
+  { id:'gr12', tool:'Git Rescue', command:'git diff HEAD~3..HEAD --stat', description:'See which files changed in the last 3 commits (summary view)', difficulty:'intermediate', type:'most-used' },
+  { id:'gr13', tool:'Git Rescue', command:'git commit --amend --no-edit', description:'Add forgotten files to the last commit without changing the message', difficulty:'intermediate', type:'most-used' },
+  { id:'gr14', tool:'Git Rescue', command:'git revert <commit-hash>', description:'Safely undo a commit by creating a NEW commit that reverses it (safe for shared branches)', difficulty:'intermediate', type:'most-used' },
+  { id:'gr15', tool:'Git Rescue', command:'git reset --soft HEAD~1', description:'Undo last commit but keep changes staged — good for re-doing a commit', difficulty:'intermediate', type:'superpower' },
+  { id:'gr16', tool:'Git Rescue', command:'git push --force-with-lease', description:'Force push with safety net — fails if someone else pushed (prevents overwriting their work)', difficulty:'advanced', type:'danger-zone' },
+
+  // === SHELL SCRIPTS: Automation Power Moves (16) ===
+  { id:'sh1',  tool:'Shell Scripts', command:'alias gs="git status" && alias gp="git push" && alias gco="git checkout"', description:'Create quick aliases — add to ~/.zshrc to make permanent', difficulty:'beginner', type:'most-used' },
+  { id:'sh2',  tool:'Shell Scripts', command:'alias dev="cd ~/projects && ls"', description:'One-word shortcut to jump to your projects folder', difficulty:'beginner', type:'most-used' },
+  { id:'sh3',  tool:'Shell Scripts', command:'echo \'alias gs="git status"\nalias gp="git push"\nalias dev="cd ~/projects && ls"\' >> ~/.zshrc && source ~/.zshrc', description:'Save aliases permanently to your shell config and reload', difficulty:'intermediate', type:'superpower' },
+  { id:'sh4',  tool:'Shell Scripts', command:'for f in *.png; do echo "Processing $f"; done', description:'Loop through files — replace echo with any command to batch process', difficulty:'intermediate', type:'most-used' },
+  { id:'sh5',  tool:'Shell Scripts', command:'find . -name "*.log" -mtime +7 -exec rm {} \\;', description:'Delete all .log files older than 7 days (safe cleanup)', difficulty:'intermediate', type:'superpower' },
+  { id:'sh6',  tool:'Shell Scripts', command:'ls *.json | xargs -I {} cp {} backup/', description:'Copy all JSON files to a backup directory using xargs', difficulty:'intermediate', type:'superpower' },
+  { id:'sh7',  tool:'Shell Scripts', command:'watch -n 5 "docker ps --format \'table {{.Names}}\\t{{.Status}}\'"', description:'Auto-refresh a command every 5 seconds — live monitoring dashboard', difficulty:'intermediate', type:'superpower' },
+  { id:'sh8',  tool:'Shell Scripts', command:'history | sort -rn | head -20', description:'See your 20 most recent commands — find patterns to automate', difficulty:'beginner', type:'most-used' },
+  { id:'sh9',  tool:'Shell Scripts', command:'!! | pbcopy', description:'Re-run the last command and copy its output to clipboard (macOS)', difficulty:'intermediate', type:'superpower' },
+  { id:'sh10', tool:'Shell Scripts', command:'command1 && command2 || echo "command1 failed"', description:'Chain commands: run command2 only if command1 succeeds, otherwise show error', difficulty:'intermediate', type:'most-used' },
+  { id:'sh11', tool:'Shell Scripts', command:'crontab -e', description:'Edit your cron jobs — schedule scripts to run automatically', difficulty:'advanced', type:'superpower' },
+  { id:'sh12', tool:'Shell Scripts', command:'# Cron example: run backup.sh every day at 2am\n0 2 * * * /Users/you/scripts/backup.sh >> /tmp/backup.log 2>&1', description:'Cron syntax: minute hour day month weekday — this runs daily at 2:00 AM', difficulty:'advanced', type:'superpower' },
+  { id:'sh13', tool:'Shell Scripts', command:'#!/bin/bash\nset -euo pipefail\n\necho "Starting deploy..."\nnpm run build && vercel --prod\necho "Done!"', description:'Shell script template: set -euo pipefail stops on ANY error (prevents silent failures)', difficulty:'intermediate', type:'superpower' },
+  { id:'sh14', tool:'Shell Scripts', command:'chmod +x deploy.sh && ./deploy.sh', description:'Make a script executable and run it', difficulty:'beginner', type:'most-used' },
+  { id:'sh15', tool:'Shell Scripts', command:'export API_KEY="sk-..." && node script.js', description:'Set a temp environment variable for one session (gone when terminal closes)', difficulty:'beginner', type:'most-used' },
+  { id:'sh16', tool:'Shell Scripts', command:'rm -rf node_modules && rm package-lock.json && npm install', description:'The nuclear reinstall — fixes most "works on their machine" dependency issues', difficulty:'intermediate', type:'danger-zone' },
+
+  // === DEBUGGING: Find and Fix Anything (16) ===
+  { id:'db1',  tool:'Debugging', command:'curl -v http://localhost:3000/api/health', description:'Verbose HTTP request — see headers, status code, timing, and response body', difficulty:'beginner', type:'most-used' },
+  { id:'db2',  tool:'Debugging', command:'curl -X POST http://localhost:3000/api/users -H "Content-Type: application/json" -d \'{"name":"test"}\'', description:'Send a POST request with JSON body — test your API endpoints without a client', difficulty:'intermediate', type:'most-used' },
+  { id:'db3',  tool:'Debugging', command:'curl -s http://localhost:3000/api/data | python3 -m json.tool', description:'Fetch JSON and pretty-print it — way easier to read than one long line', difficulty:'intermediate', type:'most-used' },
+  { id:'db4',  tool:'Debugging', command:'curl -w "\\nTime: %{time_total}s\\nStatus: %{http_code}\\n" -o /dev/null -s http://localhost:3000', description:'Measure response time and status code — quick performance check', difficulty:'intermediate', type:'superpower' },
+  { id:'db5',  tool:'Debugging', command:'node --inspect src/server.js', description:'Start Node with debugger — connect Chrome DevTools at chrome://inspect', difficulty:'intermediate', type:'superpower' },
+  { id:'db6',  tool:'Debugging', command:'NODE_OPTIONS="--inspect" npm run dev', description:'Attach debugger to any npm script (Next.js, Express, anything)', difficulty:'intermediate', type:'superpower' },
+  { id:'db7',  tool:'Debugging', command:'lsof -i :3000', description:'Find which process is hogging a port — shows PID so you can kill it', difficulty:'beginner', type:'most-used' },
+  { id:'db8',  tool:'Debugging', command:'kill -9 $(lsof -ti :3000)', description:'Kill whatever is running on port 3000 — one-liner when "address in use"', difficulty:'intermediate', type:'most-used' },
+  { id:'db9',  tool:'Debugging', command:'tail -f /var/log/system.log', description:'Watch a log file in real time — new lines appear as they are written', difficulty:'beginner', type:'most-used' },
+  { id:'db10', tool:'Debugging', command:'npx why-is-node-running', description:'Find why your Node process hangs and won\'t exit — shows open handles', difficulty:'advanced', type:'superpower' },
+  { id:'db11', tool:'Debugging', command:'npx 0x -o flamegraph.html src/server.js', description:'Generate a flamegraph — visual map of where your app spends CPU time', difficulty:'advanced', type:'superpower' },
+  { id:'db12', tool:'Debugging', command:'npm run build 2>&1 | head -50', description:'Capture build errors (both stdout and stderr) and show just the first 50 lines', difficulty:'intermediate', type:'most-used' },
+  { id:'db13', tool:'Debugging', command:'networkQuality -v', description:'macOS: test your network speed and latency — rules out "is it my internet?"', difficulty:'beginner', type:'most-used' },
+  { id:'db14', tool:'Debugging', command:'dig <domain> +short', description:'DNS lookup — check if your domain points to the right IP', difficulty:'intermediate', type:'superpower' },
+  { id:'db15', tool:'Debugging', command:'openssl s_client -connect <domain>:443 -servername <domain> 2>/dev/null | openssl x509 -noout -dates', description:'Check SSL certificate expiry date — catch expirations before they break your site', difficulty:'advanced', type:'superpower' },
+  { id:'db16', tool:'Debugging', command:'npx lighthouse http://localhost:3000 --output html --output-path ./report.html', description:'Run a full Lighthouse audit locally — performance, accessibility, SEO, best practices', difficulty:'intermediate', type:'superpower' },
+
+  // === SQL POWER: Database Mastery (16) ===
+  { id:'sq1',  tool:'SQL Power', command:'EXPLAIN ANALYZE SELECT * FROM users WHERE email = \'test@example.com\';', description:'See EXACTLY how Postgres runs your query — execution time, rows scanned, index usage', difficulty:'intermediate', type:'superpower' },
+  { id:'sq2',  tool:'SQL Power', command:'CREATE INDEX idx_users_email ON users(email);', description:'Create an index — turns slow full-table scans into instant lookups', difficulty:'intermediate', type:'most-used' },
+  { id:'sq3',  tool:'SQL Power', command:'CREATE INDEX idx_orders_user_date ON orders(user_id, created_at DESC);', description:'Composite index — speeds up "get all orders for user X sorted by date"', difficulty:'intermediate', type:'superpower' },
+  { id:'sq4',  tool:'SQL Power', command:'SELECT * FROM users u\nJOIN orders o ON o.user_id = u.id\nWHERE o.created_at > NOW() - INTERVAL \'30 days\';', description:'JOIN with date filter — get users with orders in the last 30 days', difficulty:'intermediate', type:'most-used' },
+  { id:'sq5',  tool:'SQL Power', command:'SELECT * FROM users u\nLEFT JOIN orders o ON o.user_id = u.id\nWHERE o.id IS NULL;', description:'LEFT JOIN trick: find users who have NEVER placed an order', difficulty:'intermediate', type:'superpower' },
+  { id:'sq6',  tool:'SQL Power', command:'SELECT user_id, COUNT(*) as order_count, SUM(total) as total_spent\nFROM orders\nGROUP BY user_id\nHAVING COUNT(*) > 5\nORDER BY total_spent DESC;', description:'Aggregation: find top customers with more than 5 orders, sorted by spending', difficulty:'intermediate', type:'most-used' },
+  { id:'sq7',  tool:'SQL Power', command:'WITH monthly AS (\n  SELECT DATE_TRUNC(\'month\', created_at) as month,\n    COUNT(*) as signups\n  FROM users GROUP BY 1\n)\nSELECT month, signups,\n  SUM(signups) OVER (ORDER BY month) as running_total\nFROM monthly;', description:'CTE + window function: monthly signups with a running total (dashboard query)', difficulty:'advanced', type:'superpower' },
+  { id:'sq8',  tool:'SQL Power', command:'SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) as rn\nFROM orders;', description:'Window function: number each user\'s orders by recency — rn=1 is their latest order', difficulty:'advanced', type:'superpower' },
+  { id:'sq9',  tool:'SQL Power', command:'INSERT INTO users (name, email)\nVALUES (\'Test\', \'test@test.com\')\nON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name;', description:'Upsert: insert or update if email already exists — no duplicate errors', difficulty:'intermediate', type:'most-used' },
+  { id:'sq10', tool:'SQL Power', command:'BEGIN;\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\nUPDATE accounts SET balance = balance + 100 WHERE id = 2;\nCOMMIT;', description:'Transaction: transfer money between accounts — both happen or neither does', difficulty:'intermediate', type:'most-used' },
+  { id:'sq11', tool:'SQL Power', command:'SELECT pg_size_pretty(pg_total_relation_size(\'users\'));', description:'Check table size including indexes — find what\'s eating your database storage', difficulty:'intermediate', type:'most-used' },
+  { id:'sq12', tool:'SQL Power', command:'SELECT schemaname, tablename, n_dead_tup, last_autovacuum\nFROM pg_stat_user_tables\nORDER BY n_dead_tup DESC;', description:'Find tables with dead rows that need vacuuming — slow queries often caused by this', difficulty:'advanced', type:'superpower' },
+  { id:'sq13', tool:'SQL Power', command:'SELECT pid, state, query, NOW() - query_start AS duration\nFROM pg_stat_activity\nWHERE state != \'idle\'\nORDER BY duration DESC;', description:'Find long-running queries — the #1 cause of "why is my app slow right now"', difficulty:'advanced', type:'superpower' },
+  { id:'sq14', tool:'SQL Power', command:'pg_dump -h localhost -U postgres mydb > backup_$(date +%Y%m%d).sql', description:'Backup your database to a timestamped SQL file — run this before migrations', difficulty:'intermediate', type:'most-used' },
+  { id:'sq15', tool:'SQL Power', command:'psql -h localhost -U postgres mydb < backup_20260214.sql', description:'Restore a database from a backup file', difficulty:'intermediate', type:'most-used' },
+  { id:'sq16', tool:'SQL Power', command:'DROP TABLE users CASCADE;', description:'Nuclear: delete table AND everything that depends on it (foreign keys, views, etc.)', difficulty:'advanced', type:'danger-zone' },
+
+  // === GITHUB ACTIONS: CI/CD Automation (14) ===
+  { id:'ga1',  tool:'GitHub Actions', command:'mkdir -p .github/workflows', description:'Step 1: Create the workflows directory (GitHub looks here for action files)', difficulty:'beginner', type:'most-used' },
+  { id:'ga2',  tool:'GitHub Actions', command:'# .github/workflows/ci.yml\nname: CI\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npm run build\n      - run: npm test', description:'Step 2: Basic CI pipeline — runs build + tests on every push and PR to main', difficulty:'intermediate', type:'superpower' },
+  { id:'ga3',  tool:'GitHub Actions', command:'# .github/workflows/deploy.yml\nname: Deploy\non:\n  push:\n    branches: [main]\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: amondnet/vercel-action@v25\n        with:\n          vercel-token: ${{ secrets.VERCEL_TOKEN }}\n          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}\n          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}\n          vercel-args: --prod', description:'Auto-deploy to Vercel on every push to main — no manual deploys ever again', difficulty:'intermediate', type:'superpower' },
+  { id:'ga4',  tool:'GitHub Actions', command:'# .github/workflows/lint.yml\nname: Lint\non: [pull_request]\njobs:\n  lint:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npx eslint . --max-warnings 0', description:'Lint check on every PR — blocks merge if there are any ESLint warnings', difficulty:'intermediate', type:'most-used' },
+  { id:'ga5',  tool:'GitHub Actions', command:'# .github/workflows/typecheck.yml\nname: Type Check\non: [pull_request]\njobs:\n  typecheck:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n      - run: npm ci\n      - run: npx tsc --noEmit', description:'TypeScript check on every PR — catches type errors before they hit main', difficulty:'intermediate', type:'most-used' },
+  { id:'ga6',  tool:'GitHub Actions', command:'# Cron job: runs every Monday at 9am UTC\non:\n  schedule:\n    - cron: "0 9 * * 1"', description:'Scheduled workflow trigger — run dependency audits, cleanup, or reports weekly', difficulty:'advanced', type:'superpower' },
+  { id:'ga7',  tool:'GitHub Actions', command:'# Cache node_modules between runs\n- uses: actions/cache@v4\n  with:\n    path: ~/.npm\n    key: ${{ runner.os }}-node-${{ hashFiles(\'**/package-lock.json\') }}', description:'Cache dependencies — cuts CI time from minutes to seconds on repeat runs', difficulty:'intermediate', type:'superpower' },
+  { id:'ga8',  tool:'GitHub Actions', command:'# Environment variables from secrets\nenv:\n  DATABASE_URL: ${{ secrets.DATABASE_URL }}\n  SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}', description:'Use GitHub Secrets in workflows — never hardcode credentials in YAML', difficulty:'intermediate', type:'most-used' },
+  { id:'ga9',  tool:'GitHub Actions', command:'gh secret set VERCEL_TOKEN --body "your-token-here"', description:'Add a secret to your repo from the CLI (no clicking around in GitHub UI)', difficulty:'intermediate', type:'most-used' },
+  { id:'ga10', tool:'GitHub Actions', command:'gh run list --limit 10', description:'View recent workflow runs from the terminal', difficulty:'beginner', type:'most-used' },
+  { id:'ga11', tool:'GitHub Actions', command:'gh run view <run-id> --log-failed', description:'See only the failed step logs — skip the noise and find the error fast', difficulty:'intermediate', type:'most-used' },
+  { id:'ga12', tool:'GitHub Actions', command:'gh run rerun <run-id>', description:'Re-run a failed workflow without pushing new code (flaky test? just retry)', difficulty:'beginner', type:'most-used' },
+  { id:'ga13', tool:'GitHub Actions', command:'act', description:'Run GitHub Actions LOCALLY before pushing — test your workflows without burning CI minutes', difficulty:'advanced', type:'superpower' },
+  { id:'ga14', tool:'GitHub Actions', command:'gh workflow run deploy.yml --ref main', description:'Manually trigger a workflow from the CLI — useful for on-demand deploys', difficulty:'intermediate', type:'superpower' },
+
+  // === SECURITY: Lock It Down (14) ===
+  { id:'sec1',  tool:'Security', command:'# next.config.js headers:\n{ key: "X-Frame-Options", value: "DENY" },\n{ key: "X-Content-Type-Options", value: "nosniff" },\n{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },\n{ key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" }', description:'Security headers for Next.js — prevents clickjacking, MIME sniffing, and permission abuse', difficulty:'intermediate', type:'superpower' },
+  { id:'sec2',  tool:'Security', command:'# Content Security Policy header:\n{ key: "Content-Security-Policy",\n  value: "default-src \'self\'; script-src \'self\' \'unsafe-inline\'; style-src \'self\' \'unsafe-inline\'; img-src \'self\' data: https:;" }', description:'CSP header — controls what scripts/styles/images can load (blocks XSS attacks)', difficulty:'advanced', type:'superpower' },
+  { id:'sec3',  tool:'Security', command:'npm audit', description:'Check all dependencies for known security vulnerabilities', difficulty:'beginner', type:'most-used' },
+  { id:'sec4',  tool:'Security', command:'npm audit fix', description:'Auto-fix known vulnerabilities by updating to patched versions', difficulty:'beginner', type:'most-used' },
+  { id:'sec5',  tool:'Security', command:'npx better-npm-audit audit', description:'Better audit output — groups by severity, shows actionable fixes only', difficulty:'intermediate', type:'superpower' },
+  { id:'sec6',  tool:'Security', command:'git secrets --install && git secrets --register-aws', description:'Install git-secrets — blocks you from accidentally committing AWS keys', difficulty:'intermediate', type:'superpower' },
+  { id:'sec7',  tool:'Security', command:'grep -r "sk-" --include="*.ts" --include="*.js" --include="*.env" .', description:'Quick scan: search your codebase for leaked API keys (OpenAI pattern)', difficulty:'beginner', type:'most-used' },
+  { id:'sec8',  tool:'Security', command:'echo "*.env*\n.env.local\n*.pem\n*.key\ncredentials.json" >> .gitignore', description:'Gitignore template for secrets — add BEFORE your first commit', difficulty:'beginner', type:'most-used' },
+  { id:'sec9',  tool:'Security', command:'openssl rand -base64 32', description:'Generate a cryptographically secure random string — use for JWT secrets, API keys', difficulty:'intermediate', type:'most-used' },
+  { id:'sec10', tool:'Security', command:'# Rate limiting with Vercel:\n// vercel.json\n{"headers":[{"source":"/api/(.*)",\n  "headers":[{"key":"X-RateLimit-Limit","value":"100"}]}]}', description:'Rate limiting headers — tell clients the limit (implement actual limiting in your API)', difficulty:'intermediate', type:'superpower' },
+  { id:'sec11', tool:'Security', command:'# Supabase RLS check:\nSELECT tablename, rowsecurity\nFROM pg_tables\nWHERE schemaname = \'public\';', description:'Check which tables have Row Level Security enabled — unprotected tables are wide open', difficulty:'intermediate', type:'most-used' },
+  { id:'sec12', tool:'Security', command:'npx is-website-vulnerable https://your-site.com', description:'Scan your deployed site for known JS library vulnerabilities', difficulty:'intermediate', type:'superpower' },
+  { id:'sec13', tool:'Security', command:'ssh-keygen -t ed25519 -C "your@email.com"', description:'Generate a modern SSH key (ed25519 is faster and more secure than RSA)', difficulty:'beginner', type:'most-used' },
+  { id:'sec14', tool:'Security', command:'gh auth status && gh auth refresh', description:'Check your GitHub CLI auth status and refresh tokens — good security hygiene', difficulty:'beginner', type:'most-used' }
 ];
 
 // ===== STATE =====
