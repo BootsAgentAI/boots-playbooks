@@ -1157,10 +1157,11 @@ const TOOL_CONFIG = {
   'Fly.io':           { icon: '&#128640;', color: '#8B5CF6' },
   'Mac/Terminal':     { icon: '&#128187;', color: '#555555' },
   'npm/Node.js':      { icon: '&#128230;', color: '#CB3837' },
-  'Sentry':           { icon: '&#128737;', color: '#362D59' }
+  'Sentry':           { icon: '&#128737;', color: '#362D59' },
+  'Apps':             { icon: '&#128640;', color: '#059669' }
 };
 
-// ===== BUILT-IN COMMANDS (102 total) =====
+// ===== BUILT-IN COMMANDS (120 total) =====
 const BUILTIN_COMMANDS = [
   // === DOCKER (10) ===
   { id:'d1',  tool:'Docker', command:'docker build -t <name> .', description:'Build an image from a Dockerfile in the current directory', difficulty:'beginner', type:'most-used' },
@@ -1282,7 +1283,38 @@ const BUILTIN_COMMANDS = [
   { id:'se5', tool:'Sentry', command:'sentry-cli releases deploys <ver> new -e production', description:'Register a deployment for a release in a given environment', difficulty:'intermediate', type:'superpower' },
   { id:'se6', tool:'Sentry', command:'sentry-cli send-event -m "Test event"', description:'Send a test event to verify Sentry is working', difficulty:'beginner', type:'most-used' },
   { id:'se7', tool:'Sentry', command:'sentry-cli monitors run <id> -- <command>', description:'Wrap a cron job so Sentry monitors its execution', difficulty:'advanced', type:'superpower' },
-  { id:'se8', tool:'Sentry', command:'sentry-cli releases set-commits <ver> --auto', description:'Associate commits with a release using Git integration', difficulty:'advanced', type:'superpower' }
+  { id:'se8', tool:'Sentry', command:'sentry-cli releases set-commits <ver> --auto', description:'Associate commits with a release using Git integration', difficulty:'advanced', type:'superpower' },
+
+  // === APPS: FastAPI + Vite + Vercel (18) ===
+  // Step 1: Project scaffolding
+  { id:'app1',  tool:'Apps', command:'mkdir <my-app> && cd <my-app> && mkdir api frontend', description:'Step 1: Create project root with api/ and frontend/ directories', difficulty:'beginner', type:'most-used' },
+  { id:'app2',  tool:'Apps', command:'cd frontend && npm create vite@latest . -- --template react', description:'Step 2: Scaffold Vite React app in the frontend/ directory', difficulty:'beginner', type:'most-used' },
+  { id:'app3',  tool:'Apps', command:'cd frontend && npm install', description:'Step 3: Install frontend dependencies', difficulty:'beginner', type:'most-used' },
+  { id:'app4',  tool:'Apps', command:'cd frontend && npm install axios react-router-dom', description:'Step 4: Add routing and HTTP client for API calls', difficulty:'beginner', type:'most-used' },
+
+  // Step 2: FastAPI backend
+  { id:'app5',  tool:'Apps', command:'cd api && python3 -m venv venv && source venv/bin/activate', description:'Step 5: Create and activate Python virtual environment', difficulty:'beginner', type:'most-used' },
+  { id:'app6',  tool:'Apps', command:'pip install fastapi uvicorn python-dotenv', description:'Step 6: Install FastAPI, Uvicorn server, and dotenv for env vars', difficulty:'beginner', type:'most-used' },
+  { id:'app7',  tool:'Apps', command:'pip freeze > requirements.txt', description:'Step 7: Lock dependencies to requirements.txt for Vercel', difficulty:'beginner', type:'most-used' },
+  { id:'app8',  tool:'Apps', command:'uvicorn index:app --reload --port 8000', description:'Step 8: Run FastAPI dev server with hot reload on port 8000', difficulty:'beginner', type:'most-used' },
+
+  // Step 3: Wire frontend to backend
+  { id:'app9',  tool:'Apps', command:'cd frontend && VITE_API_URL=http://localhost:8000 npm run dev', description:'Step 9: Run Vite dev server with API URL pointed at FastAPI', difficulty:'intermediate', type:'most-used' },
+  { id:'app10', tool:'Apps', command:'cd frontend && npm run build', description:'Step 10: Build production frontend (outputs to frontend/dist/)', difficulty:'beginner', type:'most-used' },
+
+  // Step 4: Vercel config
+  { id:'app11', tool:'Apps', command:'echo \'{"rewrites":[{"source":"/api/(.*)", "destination":"/api/index.py"}], "buildCommand":"cd frontend && npm run build", "outputDirectory":"frontend/dist"}\' > vercel.json', description:'Step 11: Create vercel.json — routes /api/* to FastAPI, serves Vite from dist/', difficulty:'intermediate', type:'superpower' },
+  { id:'app12', tool:'Apps', command:'vercel env add VITE_API_URL', description:'Step 12: Set the API URL environment variable on Vercel (use /api for production)', difficulty:'intermediate', type:'most-used' },
+
+  // Step 5: Git + Deploy
+  { id:'app13', tool:'Apps', command:'git init && git add . && git commit -m "Initial commit: FastAPI + Vite"', description:'Step 13: Initialize git repo and make first commit', difficulty:'beginner', type:'most-used' },
+  { id:'app14', tool:'Apps', command:'gh repo create <my-app> --public --source . --push', description:'Step 14: Create GitHub repo and push in one shot', difficulty:'intermediate', type:'superpower' },
+  { id:'app15', tool:'Apps', command:'vercel link && vercel --prod', description:'Step 15: Link to Vercel project and deploy to production', difficulty:'beginner', type:'most-used' },
+
+  // Bonus: Dev workflow commands
+  { id:'app16', tool:'Apps', command:'cd api && pip install httpx pytest pytest-asyncio && pytest', description:'Bonus: Install test deps and run FastAPI tests', difficulty:'intermediate', type:'superpower' },
+  { id:'app17', tool:'Apps', command:'cd frontend && npm run preview', description:'Bonus: Preview the production build locally before deploying', difficulty:'intermediate', type:'superpower' },
+  { id:'app18', tool:'Apps', command:'vercel logs <url> --follow', description:'Bonus: Stream live production logs to debug API issues after deploy', difficulty:'intermediate', type:'superpower' }
 ];
 
 // ===== STATE =====
@@ -2112,7 +2144,12 @@ function parseMarkdown(text) {
     kill: 'Mac/Terminal',
     lsof: 'Mac/Terminal',
     du: 'Mac/Terminal',
-    pbcopy: 'Mac/Terminal'
+    pbcopy: 'Mac/Terminal',
+    python3: 'Apps',
+    python: 'Apps',
+    pip: 'Apps',
+    uvicorn: 'Apps',
+    pytest: 'Apps'
   };
 
   function detectTool(cmd) {
